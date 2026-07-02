@@ -8,6 +8,7 @@ import { SectionReveal } from "@/components/ui/SectionReveal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 import { useI18n } from "@/lib/i18n/context";
 import { createClient } from "@/lib/supabase/client";
 
@@ -93,15 +94,27 @@ export function RsvpForm({ guestId, defaultName = "" }: RsvpFormProps) {
           />
 
           <fieldset className="space-y-3">
-            <legend className="text-sm text-muted">{t("rsvpAttending")}</legend>
-            <label className="flex items-center gap-3">
-              <input type="radio" value="yes" {...register("attending")} />
-              {t("rsvpYes")}
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="radio" value="no" {...register("attending")} />
-              {t("rsvpNo")}
-            </label>
+            <legend className="text-xs font-medium uppercase tracking-wider text-muted">
+              {t("rsvpAttending")}
+            </legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(["yes", "no"] as const).map((value) => (
+                <label
+                  key={value}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-card-border bg-surface px-4 py-3 transition-all has-[:checked]:border-accent has-[:checked]:ring-2 has-[:checked]:ring-accent/20"
+                >
+                  <input
+                    type="radio"
+                    value={value}
+                    className="accent-[var(--accent)]"
+                    {...register("attending")}
+                  />
+                  <span className="text-sm">
+                    {value === "yes" ? t("rsvpYes") : t("rsvpNo")}
+                  </span>
+                </label>
+              ))}
+            </div>
           </fieldset>
 
           {attending === "yes" && (
@@ -114,16 +127,14 @@ export function RsvpForm({ guestId, defaultName = "" }: RsvpFormProps) {
                 {...register("guest_count", { valueAsNumber: true })}
                 error={errors.guest_count?.message}
               />
-              <div className="flex flex-col gap-2">
-                <label className="text-sm text-muted">{t("rsvpMeal")}</label>
-                <select
-                  className="rounded-xl border border-card-border bg-surface px-4 py-3 outline-none focus:border-accent"
-                  {...register("meal_preference")}
-                >
-                  <option value="">{t("mealRegular")}</option>
-                  <option value="vegetarian">{t("mealVegetarian")}</option>
-                </select>
-              </div>
+              <Select
+                label={t("rsvpMeal")}
+                {...register("meal_preference")}
+                options={[
+                  { value: "", label: t("mealRegular") },
+                  { value: "vegetarian", label: t("mealVegetarian") },
+                ]}
+              />
             </>
           )}
 

@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { getRsvps } from "@/app/admin/actions";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 interface RsvpRow {
   id: string;
@@ -20,7 +24,7 @@ export default function AdminRsvpsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getRsvps().then((data) => {
+    void getRsvps().then((data) => {
       setRsvps(data as RsvpRow[]);
       setLoading(false);
     });
@@ -54,75 +58,113 @@ export default function AdminRsvpsPage() {
     URL.revokeObjectURL(url);
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <p className="text-sm text-muted">Loading RSVPs…</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-4xl">RSVPs</h1>
-        <button
-          type="button"
-          onClick={exportCsv}
-          className="rounded-full border border-card-border px-4 py-2 text-sm hover:border-accent"
-        >
+      <AdminPageHeader
+        title="RSVPs"
+        description="Search, filter, and export guest confirmations."
+      />
+
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <Input
+              label="Search"
+              placeholder="Search by name…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-48">
+            <Select
+              label="Filter"
+              value={filter}
+              onChange={(e) =>
+                setFilter(e.target.value as "all" | "yes" | "no")
+              }
+              options={[
+                { value: "all", label: "All responses" },
+                { value: "yes", label: "Attending" },
+                { value: "no", label: "Not attending" },
+              ]}
+            />
+          </div>
+        </div>
+        <Button type="button" variant="secondary" onClick={exportCsv}>
           Export CSV
-        </button>
+        </Button>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-4">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="rounded-xl border border-card-border bg-surface px-4 py-2"
-        />
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value as "all" | "yes" | "no")}
-          className="rounded-xl border border-card-border bg-surface px-4 py-2"
-        >
-          <option value="all">All</option>
-          <option value="yes">Attending</option>
-          <option value="no">Not Attending</option>
-        </select>
-      </div>
-
-      <div className="overflow-x-auto rounded-2xl border border-card-border">
+      <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-card-border bg-card">
-            <tr>
-              <th className="p-4">Name</th>
-              <th className="p-4">Attending</th>
-              <th className="p-4">Guests</th>
-              <th className="p-4">Meal</th>
-              <th className="p-4">Message</th>
-              <th className="p-4">Date</th>
+          <thead>
+            <tr className="border-b border-card-border bg-surface/50">
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Name
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Attending
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Guests
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Meal
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Message
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Date
+              </th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((rsvp) => (
-              <tr key={rsvp.id} className="border-b border-card-border">
-                <td className="p-4">{rsvp.name}</td>
-                <td className="p-4">
-                  <span
-                    className={
-                      rsvp.attending ? "text-accent" : "text-muted"
-                    }
-                  >
-                    {rsvp.attending ? "Yes" : "No"}
-                  </span>
-                </td>
-                <td className="p-4">{rsvp.guest_count}</td>
-                <td className="p-4">{rsvp.meal_preference || "—"}</td>
-                <td className="p-4 max-w-xs truncate">
-                  {rsvp.message || "—"}
-                </td>
-                <td className="p-4 text-muted">
-                  {new Date(rsvp.created_at).toLocaleDateString()}
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-5 py-12 text-center text-muted">
+                  No RSVPs found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filtered.map((rsvp) => (
+                <tr
+                  key={rsvp.id}
+                  className="border-b border-card-border last:border-0 hover:bg-surface/30"
+                >
+                  <td className="px-5 py-4 font-medium">{rsvp.name}</td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        rsvp.attending
+                          ? "bg-accent/15 text-accent"
+                          : "bg-surface text-muted"
+                      }`}
+                    >
+                      {rsvp.attending ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4">{rsvp.guest_count}</td>
+                  <td className="px-5 py-4 text-muted">
+                    {rsvp.meal_preference || "—"}
+                  </td>
+                  <td className="max-w-xs truncate px-5 py-4 text-muted">
+                    {rsvp.message || "—"}
+                  </td>
+                  <td className="px-5 py-4 text-muted">
+                    {new Date(rsvp.created_at).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -16,27 +16,35 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-b border-card-border bg-card">
+    <nav className="sticky top-0 z-50 border-b border-card-border bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/admin" className="font-display text-xl">
-          Invithem Admin
+        <Link href="/admin" className="font-display text-xl tracking-tight">
+          Invithem
+          <span className="ml-2 text-xs font-sans font-normal uppercase tracking-widest text-muted">
+            Admin
+          </span>
         </Link>
-        <div className="flex items-center gap-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm transition-colors hover:text-accent ${
-                pathname === item.href ? "text-accent" : "text-muted"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <form action={signOut}>
+        <div className="flex items-center gap-1 sm:gap-2">
+          {navItems.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`rounded-full px-3 py-1.5 text-sm transition-all sm:px-4 ${
+                  active
+                    ? "bg-accent/15 text-accent"
+                    : "text-muted hover:bg-surface hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          <form action={signOut} className="ml-2">
             <button
               type="submit"
-              className="text-sm text-muted transition-colors hover:text-accent"
+              className="rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
             >
               Logout
             </button>

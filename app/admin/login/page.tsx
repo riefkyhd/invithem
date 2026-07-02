@@ -29,30 +29,44 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md space-y-6 rounded-2xl border border-card-border bg-card p-8"
-      >
-        <h1 className="font-display text-3xl">Admin Login</h1>
-        <Input
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Input
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="text-sm text-red-400">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full">
-          Sign In
-        </Button>
-      </form>
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted">
+            Invithem
+          </p>
+          <h1 className="font-display mt-2 text-4xl">Admin</h1>
+          <p className="mt-2 text-sm text-muted">Sign in to manage your wedding</p>
+        </div>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 rounded-2xl border border-card-border bg-card p-8 shadow-sm"
+        >
+          <Input
+            label="Email"
+            type="email"
+            placeholder="you@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && (
+            <p className="rounded-lg bg-red-400/10 px-4 py-3 text-sm text-red-400">
+              {error}
+            </p>
+          )}
+          <Button type="submit" disabled={loading} className="w-full" size="lg">
+            {loading ? "Signing in…" : "Sign in"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -7,16 +7,20 @@ import {
   getGuests,
   importGuestsCsv,
 } from "@/app/admin/actions";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/Button";
+import { FileUpload } from "@/components/ui/FileUpload";
+import { FormSection } from "@/components/ui/FormSection";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { buildInvitationLink } from "@/lib/utils/whatsapp";
 import type { Guest, GuestCategory } from "@/lib/types/database";
 
-const CATEGORIES: GuestCategory[] = [
-  "family",
-  "friends",
-  "VIP",
-  "colleagues",
+const CATEGORIES: { value: GuestCategory; label: string }[] = [
+  { value: "family", label: "Family" },
+  { value: "friends", label: "Friends" },
+  { value: "VIP", label: "VIP" },
+  { value: "colleagues", label: "Colleagues" },
 ];
 
 export default function AdminGuestsPage() {
@@ -79,91 +83,118 @@ export default function AdminGuestsPage() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <p className="text-sm text-muted">Loading guests…</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h1 className="font-display mb-8 text-4xl">Guests</h1>
+      <AdminPageHeader
+        title="Guests"
+        description="Add guests and copy personalized invitation links to send via WhatsApp."
+      />
 
-      <form
-        onSubmit={handleAdd}
-        className="mb-8 grid gap-4 rounded-2xl border border-card-border bg-card p-6 sm:grid-cols-4"
-      >
-        <Input
-          placeholder="Guest name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <select
-          className="rounded-xl border border-card-border bg-surface px-4 py-3"
-          value={category}
-          onChange={(e) => setCategory(e.target.value as GuestCategory)}
+      <FormSection title="Add guest" className="mb-6">
+        <form
+          onSubmit={handleAdd}
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end"
         >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <Input
-          placeholder="WhatsApp (optional)"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
-        />
-        <Button type="submit">Add Guest</Button>
-      </form>
-
-      <div className="mb-6">
-        <label className="cursor-pointer text-sm text-accent hover:underline">
-          Import CSV
-          <input
-            type="file"
-            accept=".csv"
-            className="hidden"
-            onChange={handleCsvImport}
+          <Input
+            label="Name"
+            placeholder="Budi & Keluarga"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
-        </label>
-        <p className="mt-1 text-xs text-muted">
-          CSV format: name, category, whatsapp_number
-        </p>
-      </div>
+          <Select
+            label="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value as GuestCategory)}
+            options={CATEGORIES}
+          />
+          <Input
+            label="WhatsApp"
+            placeholder="6281234567890 (optional)"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+          />
+          <Button type="submit" className="w-full sm:w-auto">
+            Add guest
+          </Button>
+        </form>
+      </FormSection>
 
-      <div className="overflow-x-auto rounded-2xl border border-card-border">
+      <FormSection title="Import CSV" className="mb-6">
+        <FileUpload
+          label="Guest list file"
+          hint="Format: name, category, whatsapp_number"
+          accept=".csv"
+          onChange={handleCsvImport}
+        />
+      </FormSection>
+
+      <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-card-border bg-card">
-            <tr>
-              <th className="p-4">Name</th>
-              <th className="p-4">Category</th>
-              <th className="p-4">Invitation Link</th>
-              <th className="p-4">Actions</th>
+          <thead>
+            <tr className="border-b border-card-border bg-surface/50">
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Name
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Category
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Invitation
+              </th>
+              <th className="px-5 py-4 text-xs font-medium uppercase tracking-wider text-muted">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
-            {guests.map((guest) => (
-              <tr key={guest.id} className="border-b border-card-border">
-                <td className="p-4">{guest.name}</td>
-                <td className="p-4 capitalize">{guest.category}</td>
-                <td className="p-4">
-                  <button
-                    type="button"
-                    onClick={() => copyLink(guest.slug)}
-                    className="text-accent hover:underline"
-                  >
-                    {copied === guest.slug ? "Copied!" : "Copy link"}
-                  </button>
-                </td>
-                <td className="p-4">
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(guest.id)}
-                    className="text-red-400 hover:underline"
-                  >
-                    Delete
-                  </button>
+            {guests.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-5 py-12 text-center text-muted">
+                  No guests yet. Add one above or import a CSV.
                 </td>
               </tr>
-            ))}
+            ) : (
+              guests.map((guest) => (
+                <tr
+                  key={guest.id}
+                  className="border-b border-card-border last:border-0 transition-colors hover:bg-surface/30"
+                >
+                  <td className="px-5 py-4 font-medium">{guest.name}</td>
+                  <td className="px-5 py-4 capitalize text-muted">
+                    {guest.category}
+                  </td>
+                  <td className="px-5 py-4">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => copyLink(guest.slug)}
+                    >
+                      {copied === guest.slug ? "Copied!" : "Copy link"}
+                    </Button>
+                  </td>
+                  <td className="px-5 py-4">
+                    <Button
+                      type="button"
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDelete(guest.id)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

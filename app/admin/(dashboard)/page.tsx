@@ -1,4 +1,5 @@
 import { getStats } from "@/app/admin/actions";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default async function AdminDashboardPage() {
   const stats = await getStats();
@@ -14,15 +15,20 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display mb-8 text-4xl">Dashboard</h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <AdminPageHeader
+        title="Dashboard"
+        description="Overview of invitations and RSVP responses."
+      />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-card-border bg-card p-6"
+            className="rounded-2xl border border-card-border bg-card p-6 transition-colors hover:border-accent/30"
           >
-            <p className="text-sm text-muted">{card.label}</p>
-            <p className="font-display mt-2 text-4xl text-accent">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted">
+              {card.label}
+            </p>
+            <p className="font-display mt-3 text-4xl text-accent">
               {card.value}
             </p>
           </div>
