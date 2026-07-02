@@ -1,0 +1,20 @@
+[data-template="editorial-mono"] {
+  --tmpl-bg: #ffffff;
+  --tmpl-fg: #000000;
+  --tmpl-muted: #737373;
+  --tmpl-accent: #000000;
+  --tmpl-accent-fg: #ffffff;
+  --tmpl-card: #fafafa;
+  --tmpl-card-border: #e5e5e5;
+  --tmpl-surface: #f5f5f5;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="editorial-mono"] .tmpl-display {
+  font-family: var(--tmpl-display), sans-serif;
+}
+
+[data-template="editorial-mono"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}

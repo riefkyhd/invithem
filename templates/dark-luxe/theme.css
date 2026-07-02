@@ -1,0 +1,60 @@
+[data-template="dark-luxe"] {
+  --tmpl-bg: #0a0a0a;
+  --tmpl-fg: #f0ebe3;
+  --tmpl-muted: #8a8278;
+  --tmpl-accent: #c9a962;
+  --tmpl-accent-fg: #0a0a0a;
+  --tmpl-card: #111111;
+  --tmpl-card-border: #2a2620;
+  --tmpl-surface: #141414;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="dark-luxe"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="dark-luxe"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="dark-luxe"] .dl-gold-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--tmpl-accent) 20%,
+    var(--tmpl-accent) 80%,
+    transparent
+  );
+}
+
+[data-template="dark-luxe"] .dl-ornament {
+  color: var(--tmpl-accent);
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+}
+
+[data-template="dark-luxe"] .dl-input {
+  width: 100%;
+  border: 1px solid var(--tmpl-card-border);
+  background-color: var(--tmpl-surface);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-template="dark-luxe"] .dl-input:focus {
+  border-color: var(--tmpl-accent);
+  box-shadow: 0 0 0 1px var(--tmpl-accent);
+}
+
+[data-template="dark-luxe"] .dl-section-title {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

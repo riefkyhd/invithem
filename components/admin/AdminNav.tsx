@@ -9,6 +9,7 @@ const navItems = [
   { href: "/admin/guests", label: "Guests" },
   { href: "/admin/rsvps", label: "RSVPs" },
   { href: "/admin/wishes", label: "Wishes" },
+  { href: "/admin/design", label: "Design" },
   { href: "/admin/settings", label: "Settings" },
 ];
 

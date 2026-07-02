@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="693" viewBox="0 0 390 693">
+  <rect width="390" height="693" fill="#f8f8f6"/>
+  <line x1="0" y1="120" x2="390" y2="120" stroke="#ddd" stroke-width="1"/>
+  <line x1="0" y1="240" x2="390" y2="240" stroke="#ddd" stroke-width="1"/>
+  <line x1="130" y1="0" x2="130" y2="693" stroke="#ddd" stroke-width="1"/>
+  <line x1="260" y1="0" x2="260" y2="693" stroke="#ddd" stroke-width="1"/>
+  <text x="195" y="200" text-anchor="middle" fill="#e63946" font-family="sans-serif" font-size="32" font-weight="600" letter-spacing="-1">GROOM &amp; BRIDE</text>
+  <text x="195" y="650" fill="#1a1a1a" font-family="sans-serif" font-size="11" letter-spacing="2">ARCHITECTURAL MODERN</text>
+</svg>

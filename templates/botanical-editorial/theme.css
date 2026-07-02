@@ -1,0 +1,27 @@
+[data-template="botanical-editorial"] {
+  --tmpl-bg: #faf6f0;
+  --tmpl-fg: #3d3a35;
+  --tmpl-muted: #7a756c;
+  --tmpl-accent: #8a9a7b;
+  --tmpl-accent-fg: #faf6f0;
+  --tmpl-accent-secondary: #c4785a;
+  --tmpl-olive: #6b7a52;
+  --tmpl-card: #fffdf9;
+  --tmpl-card-border: #8a9a7b;
+  --tmpl-surface: #f5efe6;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="botanical-editorial"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="botanical-editorial"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="botanical-editorial"] .botanical-section {
+  border-radius: 2rem 2rem 0 0;
+  background-color: var(--tmpl-card);
+}

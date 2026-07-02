@@ -36,6 +36,7 @@ export function mergeSettings(
   if (!settings) {
     return {
       id: 1,
+      template_id: "reference",
       groom_name: "[FILL IN: Groom]",
       bride_name: "[FILL IN: Bride]",
       wedding_date: "2026-11-15T02:00:00.000Z",
@@ -63,6 +64,7 @@ export function mergeSettings(
 
   return {
     ...settings,
+    template_id: settings.template_id ?? "reference",
     story_milestones:
       settings.story_milestones?.length > 0
         ? settings.story_milestones

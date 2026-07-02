@@ -20,8 +20,18 @@ export interface GalleryImage {
   sort_order: number;
 }
 
+export type TemplateId =
+  | "reference"
+  | "editorial-mono"
+  | "dark-luxe"
+  | "botanical-editorial"
+  | "maximalist-bold"
+  | "architectural-modern"
+  | "romantic-heirloom";
+
 export interface AdminSettings {
   id: number;
+  template_id: TemplateId;
   groom_name: string;
   bride_name: string;
   wedding_date: string;

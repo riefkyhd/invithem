@@ -1,0 +1,33 @@
+[data-template="architectural-modern"] {
+  --tmpl-bg: #f8f8f6;
+  --tmpl-fg: #1a1a1a;
+  --tmpl-muted: #6b6b6b;
+  --tmpl-accent: #e63946;
+  --tmpl-accent-fg: #ffffff;
+  --tmpl-card: #f0f0ed;
+  --tmpl-card-border: #d4d4d0;
+  --tmpl-surface: #ececea;
+  --tmpl-grid: #c8c8c4;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="architectural-modern"] .tmpl-display {
+  font-family: var(--tmpl-font), sans-serif;
+  letter-spacing: -0.03em;
+}
+
+[data-template="architectural-modern"] .tmpl-body {
+  font-family: var(--tmpl-font), sans-serif;
+}
+
+[data-template="architectural-modern"] .tmpl-grid-bg {
+  background-image:
+    linear-gradient(var(--tmpl-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tmpl-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+[data-template="architectural-modern"] .tmpl-grid-line {
+  border-color: var(--tmpl-grid);
+}

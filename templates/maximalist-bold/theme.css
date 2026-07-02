@@ -1,0 +1,50 @@
+[data-template="maximalist-bold"] {
+  --tmpl-coral: #ff6b6b;
+  --tmpl-chartreuse: #c8f135;
+  --tmpl-purple: #5b2c6f;
+  --tmpl-bg: #fff8f4;
+  --tmpl-fg: #1a0a1f;
+  --tmpl-muted: #5b2c6f;
+  --tmpl-accent: #ff6b6b;
+  --tmpl-accent-fg: #fff8f4;
+  --tmpl-card: #ffffff;
+  --tmpl-card-border: #5b2c6f;
+  --tmpl-surface: #f5ede8;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="maximalist-bold"] .tmpl-display {
+  font-family: var(--tmpl-display), sans-serif;
+}
+
+[data-template="maximalist-bold"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="maximalist-bold"] .mb-color-coral {
+  background-color: var(--tmpl-coral);
+  color: var(--tmpl-accent-fg);
+}
+
+[data-template="maximalist-bold"] .mb-color-chartreuse {
+  background-color: var(--tmpl-chartreuse);
+  color: var(--tmpl-fg);
+}
+
+[data-template="maximalist-bold"] .mb-color-purple {
+  background-color: var(--tmpl-purple);
+  color: var(--tmpl-accent-fg);
+}
+
+[data-template="maximalist-bold"] .mb-frame-coral {
+  box-shadow: 12px 12px 0 var(--tmpl-coral);
+}
+
+[data-template="maximalist-bold"] .mb-frame-chartreuse {
+  box-shadow: 12px 12px 0 var(--tmpl-chartreuse);
+}
+
+[data-template="maximalist-bold"] .mb-frame-purple {
+  box-shadow: 12px 12px 0 var(--tmpl-purple);
+}
