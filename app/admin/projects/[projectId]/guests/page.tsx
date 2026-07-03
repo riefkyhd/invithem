@@ -1,4 +1,4 @@
-import { getGuests, getProject } from "@/app/admin/actions";
+import { getEvents, getGuests, getProject } from "@/app/admin/actions";
 import { GuestsPageClient } from "@/components/admin/GuestsPageClient";
 import { notFound } from "next/navigation";
 
@@ -8,9 +8,10 @@ export default async function AdminGuestsPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  const [guests, project] = await Promise.all([
+  const [guests, project, events] = await Promise.all([
     getGuests(projectId),
     getProject(projectId),
+    getEvents(projectId),
   ]);
 
   if (!project) notFound();
@@ -20,6 +21,7 @@ export default async function AdminGuestsPage({
       projectId={projectId}
       projectSlug={project.slug}
       initialGuests={guests}
+      events={events}
     />
   );
 }

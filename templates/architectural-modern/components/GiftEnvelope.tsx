@@ -22,7 +22,7 @@ export function GiftEnvelope({ data }: GiftEnvelopeProps) {
         </div>
 
         <div className="grid gap-px bg-[var(--tmpl-grid)]">
-          {data.bankAccounts.map((account) => (
+          {data.gift.bankAccounts.map((account) => (
             <div
               key={`${account.bank}-${account.account_number}`}
               className="bg-[var(--tmpl-bg)] p-8 md:p-10"
@@ -43,6 +43,19 @@ export function GiftEnvelope({ data }: GiftEnvelopeProps) {
             </div>
           ))}
         </div>
+
+        {data.gift.shippingAddress?.trim() && (
+          <div className="mt-px bg-[var(--tmpl-grid)]">
+            <div className="bg-[var(--tmpl-bg)] p-8 md:p-10">
+              <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-[var(--tmpl-muted)]">
+                {t("giftShipping")}
+              </p>
+              <p className="mt-3 whitespace-pre-line text-sm leading-relaxed">
+                {data.gift.shippingAddress}
+              </p>
+            </div>
+          </div>
+        )}
       </TemplateSectionReveal>
     </section>
   );

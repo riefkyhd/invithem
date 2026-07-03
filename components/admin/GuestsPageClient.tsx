@@ -7,6 +7,7 @@ import {
   deleteGuest,
   getGuests,
   importGuestsCsv,
+  updateGuest,
 } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +16,7 @@ import { FormSection } from "@/components/ui/FormSection";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { projectInvitationUrl } from "@/lib/projects/urls";
-import type { Guest, GuestCategory } from "@/lib/types/database";
+import type { Guest, GuestCategory, WeddingEvent } from "@/lib/types/database";
 
 const CATEGORIES: { value: GuestCategory; label: string }[] = [
   { value: "family", label: "Family" },
@@ -28,17 +29,22 @@ interface GuestsPageClientProps {
   projectId: string;
   projectSlug: string;
   initialGuests: Guest[];
+  events: WeddingEvent[];
 }
 
 export function GuestsPageClient({
   projectId,
   projectSlug,
   initialGuests,
+  events,
 }: GuestsPageClientProps) {
   const [guests, setGuests] = useState(initialGuests);
   const [name, setName] = useState("");
   const [category, setCategory] = useState<GuestCategory>("friends");
   const [whatsapp, setWhatsapp] = useState("");
+  const [selectedEventIds, setSelectedEventIds] = useState<string[]>(
+    events.map((e) => e.id)
+  );
   const [copied, setCopied] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [qrDataUrls, setQrDataUrls] = useState<Record<string, string>>({});
@@ -54,9 +60,32 @@ export function GuestsPageClient({
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    await addGuest(projectId, name, category, whatsapp || undefined);
+    await addGuest(
+      projectId,
+      name,
+      category,
+      whatsapp || undefined,
+      selectedEventIds
+    );
     setName("");
     setWhatsapp("");
+    await refreshGuests();
+  }
+
+  function toggleEventSelection(eventId: string) {
+    setSelectedEventIds((prev) =>
+      prev.includes(eventId)
+        ? prev.filter((id) => id !== eventId)
+        : [...prev, eventId]
+    );
+  }
+
+  async function toggleGuestEvent(guest: Guest, eventId: string) {
+    const current = guest.event_ids ?? [];
+    const next = current.includes(eventId)
+      ? current.filter((id) => id !== eventId)
+      : [...current, eventId];
+    await updateGuest(projectId, guest.id, { eventIds: next });
     await refreshGuests();
   }
 
@@ -162,6 +191,28 @@ export function GuestsPageClient({
             value={whatsapp}
             onChange={(e) => setWhatsapp(e.target.value)}
           />
+          {events.length > 0 && (
+            <div className="sm:col-span-2">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">
+                Invited to events
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {events.map((event) => (
+                  <label
+                    key={event.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-full border border-card-border px-3 py-1.5 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedEventIds.includes(event.id)}
+                      onChange={() => toggleEventSelection(event.id)}
+                    />
+                    {event.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
           <Button type="submit" className="w-full sm:w-auto">
             Add guest
           </Button>
@@ -291,6 +342,32 @@ export function GuestsPageClient({
                                 {guest.slug}
                               </p>
                             </div>
+                            {events.length > 0 && (
+                              <div>
+                                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">
+                                  Invited events
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {events.map((event) => (
+                                    <label
+                                      key={event.id}
+                                      className="flex items-center gap-2 text-sm"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={(guest.event_ids ?? []).includes(
+                                          event.id
+                                        )}
+                                        onChange={() =>
+                                          toggleGuestEvent(guest, event.id)
+                                        }
+                                      />
+                                      {event.label}
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                             <div className="flex flex-wrap gap-2">
                               <Button
                                 type="button"

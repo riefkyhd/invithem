@@ -4,11 +4,27 @@ export function projectStoragePath(projectId: string, filename: string): string 
 
 export function projectInvitationUrl(
   projectSlug: string,
-  guestSlug?: string
+  guestSlug?: string,
+  eventLabel?: string
 ): string {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
-  const url = `${base}/w/${projectSlug}`;
-  return guestSlug ? `${url}?to=${guestSlug}` : url;
+  let url = guestSlug
+    ? `${base}/w/${projectSlug}/${guestSlug}`
+    : `${base}/w/${projectSlug}`;
+  if (eventLabel) {
+    url += `?event=${encodeURIComponent(eventLabel)}`;
+  }
+  return url;
+}
+
+export function eventSlugFromLabel(label: string): string {
+  return label
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }

@@ -1,7 +1,9 @@
 import { mergeSettings } from "@/lib/content/placeholders";
+import { projectInvitationUrl } from "@/lib/projects/urls";
 import { getStoragePublicUrl } from "@/lib/supabase/storage";
-import type { AdminSettings, Wish } from "@/lib/types/database";
-import type { WeddingData } from "@/lib/types/wedding-data";
+import type { AdminSettings, WeddingEvent, Wish } from "@/lib/types/database";
+import type { WeddingData, WeddingGuest } from "@/lib/types/wedding-data";
+import { toMapsEmbedUrl } from "@/lib/utils/maps";
 
 function buildMonogram(groomName: string, brideName: string): string {
   const g = groomName.trim().charAt(0).toUpperCase();
@@ -9,18 +11,31 @@ function buildMonogram(groomName: string, brideName: string): string {
   return `${g}${b}`;
 }
 
-import { projectInvitationUrl } from "@/lib/projects/urls";
-import { toMapsEmbedUrl } from "@/lib/utils/maps";
+function formatEventTime(datetime: string | null): string {
+  if (!datetime) return "";
+  try {
+    return new Date(datetime).toLocaleString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
+  } catch {
+    return "";
+  }
+}
 
 export interface BuildWeddingDataContext {
   projectId: string;
   projectSlug: string;
-  guest?: { id: string; name: string; slug: string } | null;
+  guest?: WeddingGuest | null;
   wishes?: Wish[];
   invitationUrl?: string;
-  /** Frame-safe embed URLs (short links already resolved). */
-  ceremonyMapsEmbedUrl?: string;
-  receptionMapsEmbedUrl?: string;
+  events?: WeddingEvent[];
+  resolvedMapsUrls?: Record<string, string>;
 }
 
 export function buildWeddingData(
@@ -29,10 +44,28 @@ export function buildWeddingData(
 ): WeddingData {
   const settings = mergeSettings(rawSettings);
   const guestSlug = context.guest?.slug ?? "";
+  const guestEventIds = context.guest?.eventIds ?? [];
 
   const invitationUrl =
     context.invitationUrl ??
     projectInvitationUrl(context.projectSlug, guestSlug || undefined);
+
+  const allEvents = (context.events ?? []).map((event) => ({
+    id: event.id,
+    label: event.label,
+    datetime: event.datetime,
+    time: formatEventTime(event.datetime),
+    venueName: event.venue_name,
+    venueAddress: event.venue_address,
+    mapsEmbedUrl:
+      context.resolvedMapsUrls?.[event.id] ??
+      toMapsEmbedUrl(event.maps_embed_url),
+  }));
+
+  const events =
+    guestEventIds.length > 0
+      ? allEvents.filter((e) => guestEventIds.includes(e.id))
+      : allEvents;
 
   const gallery = (settings.gallery_images ?? [])
     .sort((a, b) => a.sort_order - b.sort_order)
@@ -43,9 +76,7 @@ export function buildWeddingData(
 
   const story = (settings.story_milestones ?? []).map((milestone) => ({
     ...milestone,
-    image_path: milestone.image_path
-      ? milestone.image_path
-      : undefined,
+    image_path: milestone.image_path ? milestone.image_path : undefined,
   }));
 
   return {
@@ -57,27 +88,35 @@ export function buildWeddingData(
       monogram: buildMonogram(settings.groom_name, settings.bride_name),
     },
     weddingDate: settings.wedding_date,
-    venues: {
-      ceremony: {
-        time: settings.ceremony_time,
-        name: settings.ceremony_venue_name,
-        address: settings.ceremony_venue_address,
-        mapsEmbedUrl:
-          context.ceremonyMapsEmbedUrl ??
-          toMapsEmbedUrl(settings.ceremony_maps_embed_url),
+    events,
+    parents: {
+      groom: {
+        father: settings.groom_father_name,
+        mother: settings.groom_mother_name,
       },
-      reception: {
-        time: settings.reception_time,
-        name: settings.reception_venue_name,
-        address: settings.reception_venue_address,
-        mapsEmbedUrl:
-          context.receptionMapsEmbedUrl ??
-          toMapsEmbedUrl(settings.reception_maps_embed_url),
+      bride: {
+        father: settings.bride_father_name,
+        mother: settings.bride_mother_name,
       },
     },
+    opening: {
+      quote: settings.opening_quote,
+      greetingId: settings.opening_greeting_id,
+      greetingEn: settings.opening_greeting_en,
+      formalAddressId: settings.formal_address_id,
+    },
+    gift: {
+      bankAccounts: settings.bank_accounts ?? [],
+      shippingAddress: settings.gift_shipping_address,
+    },
+    footer: {
+      sustainabilityId: settings.footer_sustainability_id,
+      sustainabilityEn: settings.footer_sustainability_en,
+      credit: settings.footer_credit,
+    },
+    isPasswordProtected: settings.is_password_protected,
     story,
     gallery,
-    bankAccounts: settings.bank_accounts ?? [],
     livestreamUrl: settings.livestream_url || null,
     musicUrl: settings.music_path
       ? getStoragePublicUrl("music", settings.music_path)

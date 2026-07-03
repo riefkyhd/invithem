@@ -2,6 +2,7 @@
 
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
+import { GuestBookSkeleton } from "@/templates/shared/GuestBookSkeleton";
 import type { GuestBookProps } from "@/lib/types/wedding-data";
 import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
@@ -12,6 +13,7 @@ const inputClass =
 export function GuestBook({ data }: GuestBookProps) {
   const {
     wishes,
+    wishesLoading,
     error,
     submitted,
     onSubmit,
@@ -65,26 +67,32 @@ export function GuestBook({ data }: GuestBookProps) {
         </form>
       </TemplateSectionReveal>
 
-      <div className="ml-[4vw] max-w-2xl space-y-0">
-        {wishes.length === 0 ? (
-          <TemplateEmptyState title={t("noWishes")} />
-        ) : (
-          wishes.map((wish, index) => (
-            <TemplateSectionReveal
-              key={wish.id}
-              motion={motion}
-              delay={(index % 5) * 0.05}
-            >
-              <div className="border-t border-[var(--tmpl-card-border)] py-8">
-                <p className="text-sm font-medium uppercase tracking-wide">{wish.name}</p>
-                <p className="mt-3 leading-relaxed text-[var(--tmpl-muted)]">
-                  {wish.message}
-                </p>
-              </div>
-            </TemplateSectionReveal>
-          ))
-        )}
-      </div>
+      {wishesLoading ? (
+        <div className="ml-[4vw] max-w-2xl">
+          <GuestBookSkeleton cardClassName="border-t border-[var(--tmpl-card-border)] py-8" />
+        </div>
+      ) : (
+        <div className="ml-[4vw] max-w-2xl space-y-0">
+          {wishes.length === 0 ? (
+            <TemplateEmptyState title={t("noWishes")} />
+          ) : (
+            wishes.map((wish, index) => (
+              <TemplateSectionReveal
+                key={wish.id}
+                motion={motion}
+                delay={(index % 5) * 0.05}
+              >
+                <div className="border-t border-[var(--tmpl-card-border)] py-8">
+                  <p className="text-sm font-medium uppercase tracking-wide">{wish.name}</p>
+                  <p className="mt-3 leading-relaxed text-[var(--tmpl-muted)]">
+                    {wish.message}
+                  </p>
+                </div>
+              </TemplateSectionReveal>
+            ))
+          )}
+        </div>
+      )}
     </section>
   );
 }

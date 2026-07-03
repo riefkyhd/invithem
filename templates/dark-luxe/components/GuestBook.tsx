@@ -2,6 +2,7 @@
 
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
+import { GuestBookSkeleton } from "@/templates/shared/GuestBookSkeleton";
 import type { GuestBookProps } from "@/lib/types/wedding-data";
 import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
@@ -9,6 +10,7 @@ import { motion } from "../motion";
 export function GuestBook({ data }: GuestBookProps) {
   const {
     wishes,
+    wishesLoading,
     error,
     submitted,
     onSubmit,
@@ -64,27 +66,33 @@ export function GuestBook({ data }: GuestBookProps) {
         </form>
       </TemplateSectionReveal>
 
-      <div className="mx-auto mt-16 max-w-md space-y-6">
-        {wishes.length === 0 ? (
-          <TemplateEmptyState title={t("noWishes")} />
-        ) : (
-          wishes.map((wish, index) => (
-            <TemplateSectionReveal
-              key={wish.id}
-              motion={motion}
-              delay={(index % 5) * 0.06}
-            >
-              <div className="border-t border-[var(--tmpl-accent)]/30 px-4 py-6 text-center">
-                <p className="tmpl-display text-lg font-light tracking-wide">{wish.name}</p>
-                <div className="dl-gold-rule mx-auto mt-3 w-12" />
-                <p className="mt-4 text-sm font-light leading-relaxed text-[var(--tmpl-muted)]">
-                  {wish.message}
-                </p>
-              </div>
-            </TemplateSectionReveal>
-          ))
-        )}
-      </div>
+      {wishesLoading ? (
+        <div className="mx-auto mt-16 max-w-md">
+          <GuestBookSkeleton cardClassName="border-t border-[var(--tmpl-accent)]/30 px-4 py-6" />
+        </div>
+      ) : (
+        <div className="mx-auto mt-16 max-w-md space-y-6">
+          {wishes.length === 0 ? (
+            <TemplateEmptyState title={t("noWishes")} />
+          ) : (
+            wishes.map((wish, index) => (
+              <TemplateSectionReveal
+                key={wish.id}
+                motion={motion}
+                delay={(index % 5) * 0.06}
+              >
+                <div className="border-t border-[var(--tmpl-accent)]/30 px-4 py-6 text-center">
+                  <p className="tmpl-display text-lg font-light tracking-wide">{wish.name}</p>
+                  <div className="dl-gold-rule mx-auto mt-3 w-12" />
+                  <p className="mt-4 text-sm font-light leading-relaxed text-[var(--tmpl-muted)]">
+                    {wish.message}
+                  </p>
+                </div>
+              </TemplateSectionReveal>
+            ))
+          )}
+        </div>
+      )}
     </section>
   );
 }

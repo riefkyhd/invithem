@@ -2,13 +2,15 @@
 
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
-import type { GuestBookProps } from "@/lib/types/wedding-data";
+import { GuestBookSkeleton } from "@/templates/shared/GuestBookSkeleton";
 import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
+import type { GuestBookProps } from "@/lib/types/wedding-data";
 import { motion } from "../motion";
 
 export function GuestBook({ data }: GuestBookProps) {
   const {
     wishes,
+    wishesLoading,
     error,
     submitted,
     onSubmit,
@@ -67,26 +69,30 @@ export function GuestBook({ data }: GuestBookProps) {
         </form>
       </TemplateSectionReveal>
 
-      <div className="mx-auto max-w-3xl space-y-4">
-        {wishes.length === 0 ? (
-          <TemplateEmptyState title={t("noWishes")} />
-        ) : (
-          wishes.map((wish, index) => (
-            <TemplateSectionReveal
-              key={wish.id}
-              motion={motion}
-              delay={(index % 5) * 0.05}
-            >
-              <div className="rounded-2xl border border-[var(--tmpl-card-border)] bg-[var(--tmpl-card)] p-6">
-                <p className="font-medium">{wish.name}</p>
-                <p className="mt-2 leading-relaxed text-[var(--tmpl-muted)]">
-                  {wish.message}
-                </p>
-              </div>
-            </TemplateSectionReveal>
-          ))
-        )}
-      </div>
+      {wishesLoading ? (
+        <GuestBookSkeleton />
+      ) : (
+        <div className="mx-auto max-w-3xl space-y-4">
+          {wishes.length === 0 ? (
+            <TemplateEmptyState title={t("noWishes")} />
+          ) : (
+            wishes.map((wish, index) => (
+              <TemplateSectionReveal
+                key={wish.id}
+                motion={motion}
+                delay={(index % 5) * 0.05}
+              >
+                <div className="rounded-2xl border border-[var(--tmpl-card-border)] bg-[var(--tmpl-card)] p-6">
+                  <p className="font-medium">{wish.name}</p>
+                  <p className="mt-2 leading-relaxed text-[var(--tmpl-muted)]">
+                    {wish.message}
+                  </p>
+                </div>
+              </TemplateSectionReveal>
+            ))
+          )}
+        </div>
+      )}
     </section>
   );
 }

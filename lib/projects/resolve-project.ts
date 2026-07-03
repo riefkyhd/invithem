@@ -1,5 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import type { AdminSettings, Project, Wish } from "@/lib/types/database";
+import type {
+  AdminSettings,
+  Project,
+  WeddingEvent,
+  Wish,
+} from "@/lib/types/database";
+import type { WeddingGuest } from "@/lib/types/wedding-data";
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const supabase = await createClient();
@@ -25,6 +31,48 @@ export async function getProjectWishesBySlug(slug: string): Promise<Wish[]> {
     p_project_slug: slug,
   });
   return (data as Wish[]) ?? [];
+}
+
+export async function getProjectEventsBySlug(
+  slug: string
+): Promise<WeddingEvent[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_project_events", {
+    p_project_slug: slug,
+  });
+  return (data as WeddingEvent[]) ?? [];
+}
+
+export async function getGuestWithEvents(
+  projectSlug: string,
+  guestSlug: string
+): Promise<WeddingGuest | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_guest_with_events", {
+    p_project_slug: projectSlug,
+    p_guest_slug: guestSlug,
+  });
+  if (!data || data.length === 0) return null;
+  const row = data[0] as {
+    id: string;
+    name: string;
+    slug: string;
+    event_ids: string[];
+  };
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    eventIds: row.event_ids ?? [],
+  };
+}
+
+export async function hasProjectAccessCookie(
+  projectId: string
+): Promise<boolean> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return cookieStore.get(`invithem_access_${projectId}`)?.value === "1";
 }
 
 export async function requirePublishedProject(slug: string): Promise<Project> {

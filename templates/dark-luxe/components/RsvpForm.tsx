@@ -1,43 +1,90 @@
 "use client";
 
 import { useRsvp } from "@/lib/invitation/hooks/use-rsvp";
+import { eventSlugFromLabel } from "@/lib/projects/urls";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
+import { RsvpConfirmation } from "@/templates/shared/RsvpConfirmation";
 import type { RsvpFormProps } from "@/lib/types/wedding-data";
 import { motion } from "../motion";
 
-export function RsvpForm({ data }: RsvpFormProps) {
+export function RsvpForm({ data, highlightEventLabel }: RsvpFormProps) {
+  const events = data.events;
+  if (events.length === 0) return null;
+
+  return (
+    <section id="rsvp" className="px-6 py-24 md:px-12 lg:px-24">
+      <div className="mx-auto max-w-md space-y-20">
+        {events.map((event) => (
+          <EventRsvpForm
+            key={event.id}
+            data={data}
+            eventId={event.id}
+            eventLabel={event.label}
+            highlight={highlightEventLabel === event.label}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EventRsvpForm({
+  data,
+  eventId,
+  eventLabel,
+  highlight,
+}: {
+  data: RsvpFormProps["data"];
+  eventId: string;
+  eventLabel: string;
+  highlight?: boolean;
+}) {
   const {
     attending,
     submitted,
     error,
+    checkinToken,
     onSubmit,
     isSubmitting,
     errors,
     register,
     t,
-  } = useRsvp(data.projectId, data.guest?.id, data.guest?.name ?? "");
+  } = useRsvp(
+    data.projectId,
+    eventId,
+    eventLabel,
+    data.guest?.id,
+    data.guest?.name ?? ""
+  );
+
+  const slug = eventSlugFromLabel(eventLabel);
 
   if (submitted) {
     return (
-      <section id="rsvp" className="px-6 py-24 md:px-12 lg:px-24">
+      <div id={`rsvp-${slug}`}>
         <TemplateSectionReveal motion={motion}>
-          <div className="mx-auto max-w-md text-center">
-            <span className="dl-ornament">◆</span>
-            <p className="tmpl-display mt-6 text-2xl font-light text-[var(--tmpl-accent)]">
-              {t("rsvpSuccess")}
-            </p>
-          </div>
+          <RsvpConfirmation
+            guestName={data.guest?.name ?? ""}
+            eventLabel={eventLabel}
+            checkinToken={checkinToken}
+          />
         </TemplateSectionReveal>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section id="rsvp" className="px-6 py-24 md:px-12 lg:px-24">
+    <div
+      id={`rsvp-${slug}`}
+      className={highlight ? "border border-[var(--tmpl-accent)]/40 p-6" : ""}
+    >
       <TemplateSectionReveal motion={motion}>
-        <div className="mx-auto max-w-md text-center">
+        <div className="text-center">
           <span className="dl-ornament">◆</span>
           <h2 className="dl-section-title tmpl-display mt-4">{t("rsvp")}</h2>
+          <p className="mt-3 text-[10px] font-light uppercase tracking-[0.3em] text-[var(--tmpl-muted)]">
+            {eventLabel}
+          </p>
           <div className="dl-gold-rule mx-auto mt-6 w-24" />
         </div>
 
@@ -118,6 +165,6 @@ export function RsvpForm({ data }: RsvpFormProps) {
           </button>
         </form>
       </TemplateSectionReveal>
-    </section>
+    </div>
   );
 }

@@ -6,10 +6,15 @@ import type { GreetingProps } from "@/lib/types/wedding-data";
 import { motion } from "../motion";
 
 export function Greeting({ data }: GreetingProps) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const guestName = data.guest?.name;
 
   if (!guestName) return null;
+
+  const prefix =
+    locale === "id"
+      ? `${t("dear")} ${data.opening.formalAddressId}`
+      : t("dear");
 
   return (
     <TemplateSectionReveal
@@ -18,7 +23,7 @@ export function Greeting({ data }: GreetingProps) {
     >
       <div className="mx-auto max-w-3xl border-l-2 border-[var(--tmpl-accent)] pl-8">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--tmpl-muted)]">
-          {t("dear")}
+          {prefix}
         </p>
         <h2 className="tmpl-display mt-2 text-3xl md:text-4xl">{guestName}</h2>
       </div>

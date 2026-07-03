@@ -22,7 +22,7 @@ const items = [
   },
   {
     key: "hasEvent" as const,
-    label: "Set ceremony & reception details",
+    label: "Set event details",
     href: (id: string) => `/admin/projects/${id}/settings`,
   },
   {

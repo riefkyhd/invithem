@@ -47,6 +47,23 @@ export interface GalleryImage {
   sort_order: number;
 }
 
+export interface WeddingEvent {
+  id: string;
+  project_id: string;
+  label: string;
+  datetime: string | null;
+  venue_name: string;
+  venue_address: string;
+  maps_embed_url: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface GuestEvent {
+  guest_id: string;
+  event_id: string;
+}
+
 export type TemplateId =
   | "reference"
   | "editorial-mono"
@@ -70,6 +87,20 @@ export interface AdminSettings {
   reception_venue_name: string;
   reception_venue_address: string;
   reception_maps_embed_url: string;
+  groom_father_name: string;
+  groom_mother_name: string;
+  bride_father_name: string;
+  bride_mother_name: string;
+  opening_quote: string;
+  opening_greeting_id: string;
+  opening_greeting_en: string;
+  formal_address_id: string;
+  gift_shipping_address: string;
+  footer_sustainability_id: string;
+  footer_sustainability_en: string;
+  footer_credit: string;
+  is_password_protected: boolean;
+  access_password_hash: string | null;
   story_milestones: StoryMilestone[];
   livestream_url: string;
   bank_accounts: BankAccount[];
@@ -89,17 +120,22 @@ export interface Guest {
   category: GuestCategory;
   whatsapp_number: string | null;
   created_at: string;
+  event_ids?: string[];
 }
 
 export interface Rsvp {
   id: string;
   project_id: string;
+  event_id: string | null;
   guest_id: string | null;
   name: string;
   attending: boolean;
   guest_count: number;
   meal_preference: string | null;
   message: string | null;
+  checked_in: boolean;
+  checked_in_at: string | null;
+  checkin_token: string | null;
   created_at: string;
 }
 

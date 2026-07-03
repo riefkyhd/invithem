@@ -11,6 +11,10 @@ export function Footer({ data }: FooterProps) {
 
   const shareMessage =
     locale === "id" ? data.share.messageId : data.share.messageEn;
+  const sustainability =
+    locale === "id"
+      ? data.footer.sustainabilityId
+      : data.footer.sustainabilityEn;
 
   function handleShare() {
     const message = `${shareMessage}\n\n${data.share.invitationUrl}`;
@@ -45,6 +49,17 @@ export function Footer({ data }: FooterProps) {
           >
             {t("share")}
           </button>
+
+          {sustainability?.trim() && (
+            <p className="mt-10 max-w-xs text-[10px] font-light uppercase tracking-[0.25em] text-[var(--tmpl-muted)]/70">
+              {sustainability}
+            </p>
+          )}
+          {data.footer.credit?.trim() && (
+            <p className="mt-3 text-[10px] font-light tracking-[0.2em] text-[var(--tmpl-muted)]/50">
+              {data.footer.credit}
+            </p>
+          )}
         </div>
       </TemplateSectionReveal>
     </footer>

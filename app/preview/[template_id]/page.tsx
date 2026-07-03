@@ -1,15 +1,8 @@
 import { Suspense } from "react";
 import { TemplateRenderer } from "@/components/invitation/TemplateRenderer";
-import { buildWeddingData } from "@/lib/invitation/build-wedding-data";
-import { mergeSettings } from "@/lib/content/placeholders";
-import {
-  getProjectSettingsBySlug,
-  getProjectWishesBySlug,
-  getProjectBySlug,
-} from "@/lib/projects/resolve-project";
-import type { TemplateId } from "@/lib/types/database";
-import { resolveMapsEmbedUrl } from "@/lib/utils/maps";
+import { loadWeddingPageData } from "@/lib/invitation/load-wedding-page";
 import { getTemplateMeta, isValidTemplateId } from "@/templates/registry";
+import type { TemplateId } from "@/lib/types/database";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -24,31 +17,11 @@ export default async function PreviewPage({
   const { template_id } = await params;
   const { project: projectSlugParam } = await searchParams;
 
-  if (!isValidTemplateId(template_id)) {
-    notFound();
-  }
+  if (!isValidTemplateId(template_id)) notFound();
 
   const projectSlug = projectSlugParam ?? "my-wedding";
-  const project = await getProjectBySlug(projectSlug);
-  if (!project) notFound();
-
   const meta = getTemplateMeta(template_id);
-  const [settings, wishes] = await Promise.all([
-    getProjectSettingsBySlug(projectSlug),
-    getProjectWishesBySlug(projectSlug),
-  ]);
-  const merged = mergeSettings(settings);
-  const [ceremonyMapsEmbedUrl, receptionMapsEmbedUrl] = await Promise.all([
-    resolveMapsEmbedUrl(merged.ceremony_maps_embed_url),
-    resolveMapsEmbedUrl(merged.reception_maps_embed_url),
-  ]);
-  const weddingData = buildWeddingData(merged, {
-    projectId: project.id,
-    projectSlug: project.slug,
-    wishes,
-    ceremonyMapsEmbedUrl,
-    receptionMapsEmbedUrl,
-  });
+  const { weddingData } = await loadWeddingPageData(projectSlug);
 
   return (
     <Suspense

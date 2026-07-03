@@ -1,14 +1,20 @@
-import type {
-  BankAccount,
-  StoryMilestone,
-  Wish,
-} from "@/lib/types/database";
+import type { BankAccount, StoryMilestone, Wish } from "@/lib/types/database";
 
-export interface VenueBlock {
+export interface WeddingEventData {
+  id: string;
+  label: string;
+  datetime: string | null;
   time: string;
-  name: string;
-  address: string;
+  venueName: string;
+  venueAddress: string;
   mapsEmbedUrl: string;
+}
+
+export interface WeddingGuest {
+  id: string;
+  name: string;
+  slug: string;
+  eventIds: string[];
 }
 
 export interface WeddingData {
@@ -20,17 +26,33 @@ export interface WeddingData {
     monogram: string;
   };
   weddingDate: string;
-  venues: {
-    ceremony: VenueBlock;
-    reception: VenueBlock;
+  events: WeddingEventData[];
+  parents: {
+    groom: { father: string; mother: string };
+    bride: { father: string; mother: string };
   };
+  opening: {
+    quote: string;
+    greetingId: string;
+    greetingEn: string;
+    formalAddressId: string;
+  };
+  gift: {
+    bankAccounts: BankAccount[];
+    shippingAddress: string;
+  };
+  footer: {
+    sustainabilityId: string;
+    sustainabilityEn: string;
+    credit: string;
+  };
+  isPasswordProtected: boolean;
   story: StoryMilestone[];
   gallery: { url: string; alt: string }[];
-  bankAccounts: BankAccount[];
   livestreamUrl: string | null;
   musicUrl: string | null;
   whatsappNumber: string;
-  guest: { id: string; name: string; slug: string } | null;
+  guest: WeddingGuest | null;
   wishes: Wish[];
   share: {
     invitationUrl: string;
@@ -45,7 +67,15 @@ export interface CoverProps {
   onOpen: () => void;
 }
 
+export interface OpeningBlockProps {
+  data: WeddingData;
+}
+
 export interface GreetingProps {
+  data: WeddingData;
+}
+
+export interface ParentsBlockProps {
   data: WeddingData;
 }
 
@@ -55,6 +85,7 @@ export interface OurStoryProps {
 
 export interface EventDetailsProps {
   data: WeddingData;
+  highlightEventLabel?: string;
 }
 
 export interface CountdownProps {
@@ -71,6 +102,7 @@ export interface LivestreamProps {
 
 export interface RsvpFormProps {
   data: WeddingData;
+  highlightEventLabel?: string;
 }
 
 export interface GuestBookProps {

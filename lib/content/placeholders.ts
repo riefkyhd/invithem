@@ -30,6 +30,21 @@ export const defaultBankAccounts = [
   },
 ];
 
+export const OPENING_GREETING_PRESETS = {
+  islamic: {
+    id: "Assalamualaikum Warahmatullahi Wabarakatuh. Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami.",
+    en: "Peace be upon you. By the grace of God, we invite you to join us in celebrating our wedding.",
+  },
+  christian: {
+    id: "Dengan penuh sukacita, kami mengundang Anda untuk hadir dan memberikan doa restu dalam pernikahan kami.",
+    en: "With great joy, we invite you to join us and share in our celebration of marriage.",
+  },
+  secular: {
+    id: "Dengan penuh sukacita, kami mengundang Anda untuk hadir dan merayakan hari bahagia kami.",
+    en: "With great joy, we invite you to join us and celebrate our special day.",
+  },
+} as const;
+
 export function mergeSettings(
   settings: AdminSettings | null
 ): AdminSettings {
@@ -48,6 +63,24 @@ export function mergeSettings(
       reception_venue_name: "[FILL IN: Reception Venue]",
       reception_venue_address: "[FILL IN: Reception Address]",
       reception_maps_embed_url: "",
+      groom_father_name: "",
+      groom_mother_name: "",
+      bride_father_name: "",
+      bride_mother_name: "",
+      opening_quote: "",
+      opening_greeting_id:
+        "Dengan penuh sukacita, kami mengundang Anda untuk hadir dan memberikan doa restu.",
+      opening_greeting_en:
+        "With great joy, we invite you to join us and share in our celebration.",
+      formal_address_id: "Bapak/Ibu/Saudara/i",
+      gift_shipping_address: "",
+      footer_sustainability_id:
+        "Undangan digital ini menghemat kertas dan membantu menjaga lingkungan.",
+      footer_sustainability_en:
+        "This digital invitation saves paper and helps protect the environment.",
+      footer_credit: "Made with Invithem",
+      is_password_protected: false,
+      access_password_hash: null,
       story_milestones: defaultStoryMilestones,
       livestream_url: "",
       bank_accounts: defaultBankAccounts,

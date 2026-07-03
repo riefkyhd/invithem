@@ -24,6 +24,7 @@ export function useWishes(
 ) {
   const { t } = useI18n();
   const [wishes, setWishes] = useState<Wish[]>(initialWishes);
+  const [wishesLoading, setWishesLoading] = useState(initialWishes.length === 0);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -34,11 +35,13 @@ export function useWishes(
 
   useEffect(() => {
     async function fetchWishes() {
+      setWishesLoading(true);
       const supabase = createClient();
       const { data } = await supabase.rpc("get_project_wishes", {
         p_project_slug: projectSlug,
       });
       if (data) setWishes(data);
+      setWishesLoading(false);
     }
     if (initialWishes.length === 0) fetchWishes();
   }, [initialWishes.length, projectSlug]);
@@ -74,6 +77,7 @@ export function useWishes(
 
   return {
     wishes,
+    wishesLoading,
     form,
     error,
     submitted,

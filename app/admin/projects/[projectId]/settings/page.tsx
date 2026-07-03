@@ -3,8 +3,12 @@
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getSettings, updateSettings, uploadFile } from "@/app/admin/actions";
+import { getEvents, getSettings, updateSettings, uploadFile } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import {
+  saveEventsForProject,
+  SettingsExtendedSections,
+} from "@/components/admin/SettingsExtendedSections";
 import { Button } from "@/components/ui/Button";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { FormSection } from "@/components/ui/FormSection";
@@ -17,6 +21,7 @@ import type {
   BankAccount,
   GalleryImage,
   StoryMilestone,
+  WeddingEvent,
 } from "@/lib/types/database";
 
 function toDatetimeLocal(iso: string): string {
@@ -46,12 +51,32 @@ const emptyMilestone = (): StoryMilestone => ({
 export default function AdminSettingsPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [settings, setSettings] = useState<AdminSettings | null>(null);
+  const [events, setEvents] = useState<WeddingEvent[]>([]);
+  const [pendingEvents, setPendingEvents] = useState<
+    Omit<WeddingEvent, "created_at" | "project_id">[]
+  >([]);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    void getSettings(projectId).then(setSettings);
+    void Promise.all([getSettings(projectId), getEvents(projectId)]).then(
+      ([s, e]) => {
+        setSettings(s);
+        setEvents(e);
+        setPendingEvents(
+          e.map((ev) => ({
+            id: ev.id,
+            label: ev.label,
+            datetime: ev.datetime,
+            venue_name: ev.venue_name,
+            venue_address: ev.venue_address,
+            maps_embed_url: ev.maps_embed_url,
+            sort_order: ev.sort_order,
+          }))
+        );
+      }
+    );
   }, [projectId]);
 
   function updateField<K extends keyof AdminSettings>(
@@ -65,9 +90,13 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     if (!settings) return;
     setSaving(true);
-    const result = await updateSettings(projectId, settings);
+    const { access_password_hash: _aph, ...safeSettings } = settings;
+    const [settingsResult] = await Promise.all([
+      updateSettings(projectId, safeSettings),
+      saveEventsForProject(projectId, pendingEvents),
+    ]);
     setSaving(false);
-    setMessage(result.error ? result.error : "Settings saved successfully.");
+    setMessage(settingsResult.error ? settingsResult.error : "Settings saved successfully.");
     setTimeout(() => setMessage(""), 4000);
   }
 
@@ -201,77 +230,13 @@ export default function AdminSettingsPage() {
           />
         </FormSection>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <FormSection title="Ceremony" description="Akad / ceremony details.">
-            <Input
-              label="Time"
-              placeholder="09:00 WIB"
-              value={settings.ceremony_time}
-              onChange={(e) => updateField("ceremony_time", e.target.value)}
-            />
-            <Input
-              label="Venue"
-              placeholder="Venue name"
-              value={settings.ceremony_venue_name}
-              onChange={(e) =>
-                updateField("ceremony_venue_name", e.target.value)
-              }
-            />
-            <Textarea
-              label="Address"
-              placeholder="Full address"
-              value={settings.ceremony_venue_address}
-              onChange={(e) =>
-                updateField("ceremony_venue_address", e.target.value)
-              }
-              className="min-h-24"
-            />
-            <Input
-              label="Google Maps link"
-              placeholder="Paste any Google Maps link"
-              hint="Share link, place URL, or embed code — all work"
-              value={settings.ceremony_maps_embed_url}
-              onChange={(e) =>
-                updateField("ceremony_maps_embed_url", e.target.value)
-              }
-            />
-          </FormSection>
-
-          <FormSection title="Reception" description="Reception details.">
-            <Input
-              label="Time"
-              placeholder="11:00 WIB"
-              value={settings.reception_time}
-              onChange={(e) => updateField("reception_time", e.target.value)}
-            />
-            <Input
-              label="Venue"
-              placeholder="Venue name"
-              value={settings.reception_venue_name}
-              onChange={(e) =>
-                updateField("reception_venue_name", e.target.value)
-              }
-            />
-            <Textarea
-              label="Address"
-              placeholder="Full address"
-              value={settings.reception_venue_address}
-              onChange={(e) =>
-                updateField("reception_venue_address", e.target.value)
-              }
-              className="min-h-24"
-            />
-            <Input
-              label="Google Maps link"
-              placeholder="Paste any Google Maps link"
-              hint="Share link, place URL, or embed code — all work"
-              value={settings.reception_maps_embed_url}
-              onChange={(e) =>
-                updateField("reception_maps_embed_url", e.target.value)
-              }
-            />
-          </FormSection>
-        </div>
+        <SettingsExtendedSections
+          projectId={projectId}
+          settings={settings}
+          events={events}
+          onSettingsChange={updateField}
+          onEventsChange={setPendingEvents}
+        />
 
         <FormSection
           title="Our Story"
@@ -398,6 +363,15 @@ export default function AdminSettingsPage() {
           <Button type="button" variant="secondary" size="sm" onClick={addBankAccount}>
             + Add account
           </Button>
+          <Textarea
+            label="Gift shipping address"
+            hint="Physical gift address for guests who cannot attend"
+            value={settings.gift_shipping_address}
+            onChange={(e) =>
+              updateField("gift_shipping_address", e.target.value)
+            }
+            className="mt-4 min-h-24"
+          />
         </FormSection>
 
         <FormSection

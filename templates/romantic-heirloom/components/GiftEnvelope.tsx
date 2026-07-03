@@ -22,7 +22,7 @@ export function GiftEnvelope({ data }: GiftEnvelopeProps) {
         </div>
 
         <div className="mx-auto mt-12 max-w-md space-y-8">
-          {data.bankAccounts.map((account) => (
+          {data.gift.bankAccounts.map((account) => (
             <div
               key={`${account.bank}-${account.account_number}`}
               className="rh-card-top-border bg-[var(--tmpl-card)] px-8 py-8 text-center shadow-sm"
@@ -43,6 +43,17 @@ export function GiftEnvelope({ data }: GiftEnvelopeProps) {
             </div>
           ))}
         </div>
+
+        {data.gift.shippingAddress?.trim() && (
+          <div className="rh-card-top-border mx-auto mt-8 max-w-md bg-[var(--tmpl-card)] px-8 py-8 text-center shadow-sm">
+            <p className="text-[10px] font-light uppercase tracking-[0.3em] text-[var(--tmpl-muted)]">
+              {t("giftShipping")}
+            </p>
+            <p className="tmpl-body mt-3 whitespace-pre-line text-sm font-light leading-relaxed text-[var(--tmpl-fg)]">
+              {data.gift.shippingAddress}
+            </p>
+          </div>
+        )}
       </TemplateSectionReveal>
     </section>
   );

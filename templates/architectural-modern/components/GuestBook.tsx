@@ -2,6 +2,7 @@
 
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
+import { GuestBookSkeleton } from "@/templates/shared/GuestBookSkeleton";
 import type { GuestBookProps } from "@/lib/types/wedding-data";
 import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
@@ -12,6 +13,7 @@ const inputClass =
 export function GuestBook({ data }: GuestBookProps) {
   const {
     wishes,
+    wishesLoading,
     error,
     submitted,
     onSubmit,
@@ -69,28 +71,34 @@ export function GuestBook({ data }: GuestBookProps) {
         </form>
       </TemplateSectionReveal>
 
-      <div className="mx-auto max-w-2xl gap-px bg-[var(--tmpl-grid)]">
-        {wishes.length === 0 ? (
-          <TemplateEmptyState title={t("noWishes")} className="bg-[var(--tmpl-bg)]" />
-        ) : (
-          wishes.map((wish, index) => (
-            <TemplateSectionReveal
-              key={wish.id}
-              motion={motion}
-              delay={(index % 5) * 0.06}
-            >
-              <div className="bg-[var(--tmpl-bg)] p-6 md:p-8">
-                <p className="text-sm font-semibold uppercase tracking-wide">
-                  {wish.name}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--tmpl-muted)]">
-                  {wish.message}
-                </p>
-              </div>
-            </TemplateSectionReveal>
-          ))
-        )}
-      </div>
+      {wishesLoading ? (
+        <div className="mx-auto max-w-2xl">
+          <GuestBookSkeleton cardClassName="bg-[var(--tmpl-bg)] p-6 md:p-8" />
+        </div>
+      ) : (
+        <div className="mx-auto max-w-2xl gap-px bg-[var(--tmpl-grid)]">
+          {wishes.length === 0 ? (
+            <TemplateEmptyState title={t("noWishes")} className="bg-[var(--tmpl-bg)]" />
+          ) : (
+            wishes.map((wish, index) => (
+              <TemplateSectionReveal
+                key={wish.id}
+                motion={motion}
+                delay={(index % 5) * 0.06}
+              >
+                <div className="bg-[var(--tmpl-bg)] p-6 md:p-8">
+                  <p className="text-sm font-semibold uppercase tracking-wide">
+                    {wish.name}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--tmpl-muted)]">
+                    {wish.message}
+                  </p>
+                </div>
+              </TemplateSectionReveal>
+            ))
+          )}
+        </div>
+      )}
     </section>
   );
 }

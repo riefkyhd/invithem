@@ -2,6 +2,7 @@
 
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
+import { GuestBookSkeleton } from "@/templates/shared/GuestBookSkeleton";
 import type { GuestBookProps } from "@/lib/types/wedding-data";
 import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
@@ -18,6 +19,7 @@ const WISH_ACCENTS = [
 export function GuestBook({ data }: GuestBookProps) {
   const {
     wishes,
+    wishesLoading,
     error,
     submitted,
     onSubmit,
@@ -80,30 +82,36 @@ export function GuestBook({ data }: GuestBookProps) {
         </form>
       </TemplateSectionReveal>
 
-      <div className="max-w-2xl space-y-4">
-        {wishes.length === 0 ? (
-          <TemplateEmptyState title={t("noWishes")} />
-        ) : (
-          wishes.map((wish, index) => (
-            <TemplateSectionReveal
-              key={wish.id}
-              motion={motion}
-              delay={(index % 5) * 0.05}
-            >
-              <div
-                className={`bg-[var(--tmpl-card)] py-6 pl-6 pr-4 ${WISH_ACCENTS[index % WISH_ACCENTS.length]}`}
+      {wishesLoading ? (
+        <div className="max-w-2xl">
+          <GuestBookSkeleton cardClassName="bg-[var(--tmpl-card)] py-6 pl-6 pr-4 border-l-4 border-[var(--tmpl-coral)]" />
+        </div>
+      ) : (
+        <div className="max-w-2xl space-y-4">
+          {wishes.length === 0 ? (
+            <TemplateEmptyState title={t("noWishes")} />
+          ) : (
+            wishes.map((wish, index) => (
+              <TemplateSectionReveal
+                key={wish.id}
+                motion={motion}
+                delay={(index % 5) * 0.05}
               >
-                <p className="tmpl-display text-sm font-bold uppercase tracking-wide">
-                  {wish.name}
-                </p>
-                <p className="tmpl-body mt-3 leading-relaxed text-[var(--tmpl-muted)]">
-                  {wish.message}
-                </p>
-              </div>
-            </TemplateSectionReveal>
-          ))
-        )}
-      </div>
+                <div
+                  className={`bg-[var(--tmpl-card)] py-6 pl-6 pr-4 ${WISH_ACCENTS[index % WISH_ACCENTS.length]}`}
+                >
+                  <p className="tmpl-display text-sm font-bold uppercase tracking-wide">
+                    {wish.name}
+                  </p>
+                  <p className="tmpl-body mt-3 leading-relaxed text-[var(--tmpl-muted)]">
+                    {wish.message}
+                  </p>
+                </div>
+              </TemplateSectionReveal>
+            ))
+          )}
+        </div>
+      )}
     </section>
   );
 }

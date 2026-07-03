@@ -2,7 +2,9 @@ import "./theme.css";
 import { fonts } from "./fonts";
 import { motion } from "./motion";
 import { Cover } from "./components/Cover";
+import { OpeningBlock } from "./components/OpeningBlock";
 import { Greeting } from "./components/Greeting";
+import { ParentsBlock } from "./components/ParentsBlock";
 import { OurStory } from "./components/OurStory";
 import { Countdown } from "./components/Countdown";
 import { EventDetails } from "./components/EventDetails";
@@ -20,7 +22,9 @@ const templateModule: TemplateModule = {
   grainIntensity: "subtle",
   components: {
     Cover,
+    OpeningBlock,
     Greeting,
+    ParentsBlock,
     OurStory,
     EventDetails,
     Countdown,

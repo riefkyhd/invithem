@@ -9,12 +9,16 @@ import type {
   GreetingProps,
   GuestBookProps,
   LivestreamProps,
+  OpeningBlockProps,
   OurStoryProps,
+  ParentsBlockProps,
   RsvpFormProps,
 } from "@/lib/types/wedding-data";
 
 export const TEMPLATE_SECTION_KEYS = [
+  "OpeningBlock",
   "Greeting",
+  "ParentsBlock",
   "OurStory",
   "Countdown",
   "EventDetails",
@@ -51,7 +55,9 @@ export interface TemplateMotionVariants {
 
 export interface TemplateComponents {
   Cover: ComponentType<CoverProps>;
+  OpeningBlock: ComponentType<OpeningBlockProps>;
   Greeting: ComponentType<GreetingProps>;
+  ParentsBlock: ComponentType<ParentsBlockProps>;
   OurStory: ComponentType<OurStoryProps>;
   EventDetails: ComponentType<EventDetailsProps>;
   Countdown: ComponentType<CountdownProps>;

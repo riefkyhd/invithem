@@ -21,6 +21,7 @@ export function AdminNav({ projectId, projects = [] }: AdminNavProps) {
         { href: `${base}/guests`, label: "Guests", exact: false },
         { href: `${base}/rsvps`, label: "RSVPs", exact: false },
         { href: `${base}/wishes`, label: "Wishes", exact: false },
+        { href: `${base}/checkin`, label: "Check-in", exact: false },
         { href: `${base}/design`, label: "Design", exact: false },
         { href: `${base}/settings`, label: "Settings", exact: false },
       ]

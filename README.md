@@ -6,7 +6,7 @@ A single-wedding digital invitation website — lightweight, fast, and personali
 
 **Guest-facing**
 - Cover screen with tap-to-open envelope animation
-- Personalized greeting via `/?to=<slug>` query param
+- Personalized greeting via `/w/[projectSlug]/[guestSlug]` (legacy `?to=` redirects)
 - Our story timeline, event details, countdown, gallery
 - RSVP form, wishes wall, digital envelope (amplop digital)
 - WhatsApp share, bilingual toggle (ID/EN), background music
@@ -56,7 +56,10 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+CHECKIN_SECRET=your-random-32-byte-hex-secret
 ```
+
+`CHECKIN_SECRET` signs QR check-in tokens. Generate with `openssl rand -hex 32`.
 
 ### 4. Run locally
 
@@ -79,12 +82,11 @@ npm run dev
 Each authenticated account can own multiple wedding **projects**. Guest invitations live at:
 
 ```
-/w/[projectSlug]?to=[guestSlug]
+/w/[projectSlug]/[guestSlug]
+/w/[projectSlug]/[guestSlug]?event=Resepsi
 ```
 
-Admin dashboard: `/admin/projects` → select or create a project → manage guests, RSVPs, wishes, settings, and design per project.
-
-Legacy links (`/?to=slug`) redirect to `/w/my-wedding?to=slug`.
+Legacy links (`/w/[projectSlug]?to=[guestSlug]`) redirect to the path-based URL.
 
 ## Custom domain (Vercel Hobby, zero extra cost)
 

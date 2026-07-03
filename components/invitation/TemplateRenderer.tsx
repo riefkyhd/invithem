@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { MusicToggle } from "@/components/invitation/MusicToggle";
 import { LanguageToggle } from "@/components/invitation/LanguageToggle";
 import { GrainOverlay } from "@/templates/shared/GrainOverlay";
+import { eventSlugFromLabel } from "@/lib/projects/urls";
 import { createClient } from "@/lib/supabase/client";
 import type { TemplateId } from "@/lib/types/database";
 import type { WeddingData } from "@/lib/types/wedding-data";
@@ -18,6 +19,7 @@ import { loadTemplate } from "@/templates/registry";
 interface TemplateRendererProps {
   templateId: TemplateId;
   projectSlug: string;
+  guestSlug?: string;
   data: WeddingData;
   previewMode?: boolean;
   previewLabel?: string;
@@ -26,15 +28,15 @@ interface TemplateRendererProps {
 export function TemplateRenderer({
   templateId,
   projectSlug,
+  guestSlug,
   data,
   previewMode = false,
   previewLabel,
 }: TemplateRendererProps) {
   const searchParams = useSearchParams();
-  const guestSlug = searchParams.get("to");
+  const highlightEvent = searchParams.get("event") ?? undefined;
 
   const [opened, setOpened] = useState(false);
-  const [guestLookup, setGuestLookup] = useState<WeddingData["guest"]>(null);
   const [template, setTemplate] = useState<TemplateModule | null>(null);
   const [loadedTemplateId, setLoadedTemplateId] = useState<TemplateId | null>(
     null
@@ -56,22 +58,21 @@ export function TemplateRenderer({
   }, [templateId]);
 
   useEffect(() => {
-    if (!guestSlug) return;
-    const slug = guestSlug;
-    async function lookupGuest() {
-      const supabase = createClient();
-      const { data: guestRows } = await supabase.rpc("get_guest_by_slug", {
-        p_project_slug: projectSlug,
-        p_guest_slug: slug,
-      });
-      if (guestRows && guestRows.length > 0) {
-        const row = guestRows[0];
-        setGuestLookup({ id: row.id, name: row.name, slug });
-        await supabase.rpc("log_invitation_view", { p_guest_id: row.id });
-      }
+    if (!guestSlug || !data.guest) return;
+    const supabase = createClient();
+    void supabase.rpc("log_invitation_view", { p_guest_id: data.guest.id });
+  }, [guestSlug, data.guest]);
+
+  useEffect(() => {
+    if (!opened || !highlightEvent) return;
+    const slug = eventSlugFromLabel(highlightEvent);
+    const el = document.getElementById(`event-${slug}`);
+    if (el) {
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
     }
-    lookupGuest();
-  }, [guestSlug, projectSlug]);
+  }, [opened, highlightEvent]);
 
   const resolvedData = useMemo((): WeddingData => {
     const invitationUrl =
@@ -80,10 +81,9 @@ export function TemplateRenderer({
         : data.share.invitationUrl;
     return {
       ...data,
-      guest: guestSlug ? guestLookup : data.guest,
       share: { ...data.share, invitationUrl },
     };
-  }, [data, guestLookup, guestSlug]);
+  }, [data]);
 
   if (loading || !template) {
     return (
@@ -100,26 +100,57 @@ export function TemplateRenderer({
   function shouldRenderSection(key: TemplateSectionKey): boolean {
     if (key === "Livestream" && !resolvedData.livestreamUrl) return false;
     if (key === "Greeting" && !resolvedData.guest?.name) return false;
+    if (key === "OpeningBlock") {
+      const o = resolvedData.opening;
+      return !!(o.quote?.trim() || o.greetingId?.trim() || o.greetingEn?.trim());
+    }
+    if (key === "ParentsBlock") {
+      const p = resolvedData.parents;
+      return !!(
+        p.groom.father.trim() ||
+        p.groom.mother.trim() ||
+        p.bride.father.trim() ||
+        p.bride.mother.trim()
+      );
+    }
+    if (key === "EventDetails" && resolvedData.events.length === 0) return false;
+    if (key === "RsvpForm" && resolvedData.events.length === 0) return false;
     return true;
   }
 
   function renderSection(key: TemplateSectionKey) {
     if (!shouldRenderSection(key)) return null;
     switch (key) {
+      case "OpeningBlock":
+        return <components.OpeningBlock key={key} data={resolvedData} />;
       case "Greeting":
         return <components.Greeting key={key} data={resolvedData} />;
+      case "ParentsBlock":
+        return <components.ParentsBlock key={key} data={resolvedData} />;
       case "OurStory":
         return <components.OurStory key={key} data={resolvedData} />;
       case "Countdown":
         return <components.Countdown key={key} data={resolvedData} />;
       case "EventDetails":
-        return <components.EventDetails key={key} data={resolvedData} />;
+        return (
+          <components.EventDetails
+            key={key}
+            data={resolvedData}
+            highlightEventLabel={highlightEvent ?? undefined}
+          />
+        );
       case "Gallery":
         return <components.Gallery key={key} data={resolvedData} />;
       case "Livestream":
         return <components.Livestream key={key} data={resolvedData} />;
       case "RsvpForm":
-        return <components.RsvpForm key={key} data={resolvedData} />;
+        return (
+          <components.RsvpForm
+            key={key}
+            data={resolvedData}
+            highlightEventLabel={highlightEvent ?? undefined}
+          />
+        );
       case "GuestBook":
         return <components.GuestBook key={key} data={resolvedData} />;
       case "GiftEnvelope":
