@@ -92,7 +92,7 @@ export function OurStory({ data }: OurStoryProps) {
                   <h3 className="tmpl-display mt-4 text-2xl font-extrabold uppercase tracking-[-0.02em] md:text-3xl">
                     {milestone.title}
                   </h3>
-                  <p className="tmpl-body mt-5 max-w-md leading-relaxed text-[var(--tmpl-muted)]">
+                  <p className="prose-invite tmpl-body mt-5 leading-relaxed text-[var(--tmpl-muted)]">
                     {milestone.description}
                   </p>
                 </div>

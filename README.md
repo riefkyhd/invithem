@@ -74,6 +74,53 @@ npm run dev
 3. Add environment variables in Vercel project settings
 4. Set `NEXT_PUBLIC_SITE_URL` to your production URL
 
+## Multi-project architecture
+
+Each authenticated account can own multiple wedding **projects**. Guest invitations live at:
+
+```
+/w/[projectSlug]?to=[guestSlug]
+```
+
+Admin dashboard: `/admin/projects` → select or create a project → manage guests, RSVPs, wishes, settings, and design per project.
+
+Legacy links (`/?to=slug`) redirect to `/w/my-wedding?to=slug`.
+
+## Custom domain (Vercel Hobby, zero extra cost)
+
+A couple can point their own domain (e.g. `budi-ayu-wedding.com`) at the invitation:
+
+1. In **Vercel** → Project → Settings → Domains, add the custom domain (Hobby plan supports one custom domain).
+2. Configure DNS at the registrar (CNAME to `cname.vercel-dns.com` or A records as Vercel instructs).
+3. Optional middleware rewrite: map the custom domain host to a project slug by adding a host→slug map in `middleware.ts`:
+
+```typescript
+const CUSTOM_DOMAINS: Record<string, string> = {
+  "budi-ayu-wedding.com": "budi-ayu",
+};
+// if (host in CUSTOM_DOMAINS) rewrite to /w/${CUSTOM_DOMAINS[host]}
+```
+
+4. Set `NEXT_PUBLIC_SITE_URL` to the custom domain so share links and OG images use the correct origin.
+
+## Day-of live mode
+
+Cast wishes on a venue screen:
+
+```
+/w/[projectSlug]/live
+```
+
+Auto-scrolling guest book, no admin chrome.
+
+## RLS regression test
+
+After creating two test projects:
+
+```bash
+PROJECT_A_SLUG=my-wedding PROJECT_B_SLUG=test-b npx tsx scripts/rls-regression.ts
+```
+
 ## Content to Fill In
 
 Update via Admin → Settings or directly in `admin_settings`:

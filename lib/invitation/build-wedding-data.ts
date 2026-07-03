@@ -9,7 +9,11 @@ function buildMonogram(groomName: string, brideName: string): string {
   return `${g}${b}`;
 }
 
+import { projectInvitationUrl } from "@/lib/projects/urls";
+
 export interface BuildWeddingDataContext {
+  projectId: string;
+  projectSlug: string;
   guest?: { id: string; name: string; slug: string } | null;
   wishes?: Wish[];
   invitationUrl?: string;
@@ -17,17 +21,14 @@ export interface BuildWeddingDataContext {
 
 export function buildWeddingData(
   rawSettings: AdminSettings | null,
-  context: BuildWeddingDataContext = {}
+  context: BuildWeddingDataContext
 ): WeddingData {
   const settings = mergeSettings(rawSettings);
-  const slug = context.guest?.slug ?? "";
-
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000";
+  const guestSlug = context.guest?.slug ?? "";
 
   const invitationUrl =
-    context.invitationUrl ?? `${baseUrl}/?to=${slug}`;
+    context.invitationUrl ??
+    projectInvitationUrl(context.projectSlug, guestSlug || undefined);
 
   const gallery = (settings.gallery_images ?? [])
     .sort((a, b) => a.sort_order - b.sort_order)
@@ -44,6 +45,8 @@ export function buildWeddingData(
   }));
 
   return {
+    projectId: context.projectId,
+    projectSlug: context.projectSlug,
     couple: {
       groomName: settings.groom_name,
       brideName: settings.bride_name,

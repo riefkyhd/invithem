@@ -55,7 +55,7 @@ export function Countdown({ data }: CountdownProps) {
   ];
 
   return (
-    <section className="px-6 py-24 md:px-12 lg:px-24">
+    <section className="relative px-6 py-24 md:px-12 lg:px-24">
       <TemplateSectionReveal motion={motion}>
         <div className="text-center">
           <span className="rh-ornament">✦</span>
@@ -63,7 +63,13 @@ export function Countdown({ data }: CountdownProps) {
           <div className="rh-double-rule mx-auto mt-6 w-32" />
         </div>
 
-        <div className="mx-auto mt-16 flex max-w-3xl items-center justify-center">
+        <div className="relative mx-auto mt-16 flex max-w-3xl items-center justify-center">
+          <span
+            className="tmpl-display pointer-events-none absolute select-none text-[clamp(5rem,18vw,10rem)] font-medium leading-none text-[var(--tmpl-gold)]/15"
+            aria-hidden
+          >
+            &
+          </span>
           {units.map((unit, index) => (
             <div key={unit.label} className="flex items-center">
               <div className="flex flex-col items-center px-3 md:px-6">

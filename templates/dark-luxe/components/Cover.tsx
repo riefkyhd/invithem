@@ -6,7 +6,9 @@ import { id as idLocale, enUS } from "date-fns/locale";
 import { useI18n } from "@/lib/i18n/context";
 import { useTheme } from "@/lib/theme/context";
 import type { CoverProps } from "@/lib/types/wedding-data";
-import { motion as motionConfig } from "../motion";
+
+const slowFade = { duration: 1.1, ease: [0.25, 0.1, 0.25, 1] as const };
+const hairlineDraw = { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] as const };
 
 export function Cover({ data, opened, onOpen }: CoverProps) {
   const { locale, t } = useI18n();
@@ -26,9 +28,9 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
       {!opened && (
         <motion.div
           className="fixed inset-0 z-50 flex cursor-pointer flex-col items-center justify-center bg-[var(--tmpl-bg)] px-6"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.03 }}
-          transition={motionConfig.coverExit.transition}
+          initial={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.06 }}
+          transition={slowFade}
           onClick={handleOpen}
           role="button"
           tabIndex={0}
@@ -38,6 +40,7 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
             className="flex flex-col items-center text-center"
           >
@@ -61,7 +64,12 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
               {data.couple.brideName}
             </h1>
 
-            <div className="dl-gold-rule mt-10 w-32" />
+            <motion.div
+              className="mt-10 h-px bg-[var(--tmpl-accent)]"
+              initial={{ width: "8rem", opacity: 1 }}
+              exit={{ width: "min(100vw, 32rem)", opacity: 0 }}
+              transition={hairlineDraw}
+            />
 
             <p className="mt-8 text-xs font-light uppercase tracking-[0.3em] text-[var(--tmpl-muted)]">
               {formattedDate}
@@ -72,7 +80,8 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
             className="absolute bottom-16 flex flex-col items-center gap-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <span className="dl-ornament">◆</span>
             <p className="text-[10px] font-light uppercase tracking-[0.35em] text-[var(--tmpl-muted)]">

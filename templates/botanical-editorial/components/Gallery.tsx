@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
-import { getGalleryImages } from "@/lib/invitation/template-utils";
 import type { GalleryProps } from "@/lib/types/wedding-data";
+import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { BotanicalDivider } from "../assets/BotanicalDivider";
 import { motion } from "../motion";
 
@@ -37,7 +37,8 @@ export function Gallery({ data }: GalleryProps) {
   const { t } = useI18n();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const displayImages = getGalleryImages(data);
+  const displayImages = data.gallery;
+  const isEmpty = displayImages.length === 0;
   const lightboxImages = displayImages.map((img) => ({
     src: img.url,
     alt: img.alt,
@@ -52,6 +53,11 @@ export function Gallery({ data }: GalleryProps) {
         </h2>
       </TemplateSectionReveal>
 
+      {isEmpty ? (
+        <TemplateSectionReveal motion={motion} className="mt-14">
+          <TemplateEmptyState title={t("gallery")} />
+        </TemplateSectionReveal>
+      ) : (
       <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
         {displayImages.map((image, index) => (
           <TemplateSectionReveal
@@ -77,6 +83,7 @@ export function Gallery({ data }: GalleryProps) {
           </TemplateSectionReveal>
         ))}
       </div>
+      )}
 
       {lightboxIndex !== null && (
         <Lightbox

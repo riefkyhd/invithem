@@ -17,6 +17,7 @@ import type { TemplateModule } from "@/templates/types";
 const templateModule: TemplateModule = {
   fonts,
   motion,
+  grainIntensity: "strong",
   components: {
     Cover,
     Greeting,

@@ -16,7 +16,7 @@ export function RsvpForm({ data }: RsvpFormProps) {
     errors,
     register,
     t,
-  } = useRsvp(data.guest?.id, data.guest?.name ?? "");
+  } = useRsvp(data.projectId, data.guest?.id, data.guest?.name ?? "");
 
   if (submitted) {
     return (

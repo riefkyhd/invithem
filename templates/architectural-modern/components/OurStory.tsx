@@ -55,7 +55,7 @@ export function OurStory({ data }: OurStoryProps) {
                   <h3 className="tmpl-display text-xl font-semibold tracking-[-0.03em] md:text-2xl">
                     {milestone.title}
                   </h3>
-                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--tmpl-muted)]">
+                  <p className="prose-invite mt-4 text-sm leading-relaxed text-[var(--tmpl-muted)]">
                     {milestone.description}
                   </p>
                 </div>

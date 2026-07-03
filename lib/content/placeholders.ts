@@ -35,7 +35,7 @@ export function mergeSettings(
 ): AdminSettings {
   if (!settings) {
     return {
-      id: 1,
+      project_id: "",
       template_id: "reference",
       groom_name: "[FILL IN: Groom]",
       bride_name: "[FILL IN: Bride]",
@@ -54,7 +54,6 @@ export function mergeSettings(
       music_path: "",
       gallery_images: [],
       whatsapp_number: "",
-      admin_emails: [],
       share_message_id:
         "Kami mengundang Anda untuk merayakan pernikahan kami.",
       share_message_en: "We invite you to celebrate our wedding.",

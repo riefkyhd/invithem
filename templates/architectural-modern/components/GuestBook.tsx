@@ -3,6 +3,7 @@
 import { useWishes } from "@/lib/invitation/hooks/use-wishes";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
 import type { GuestBookProps } from "@/lib/types/wedding-data";
+import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
 
 const inputClass =
@@ -18,7 +19,7 @@ export function GuestBook({ data }: GuestBookProps) {
     errors,
     register,
     t,
-  } = useWishes(data.wishes, data.guest?.name ?? "");
+  } = useWishes(data.projectId, data.projectSlug, data.wishes, data.guest?.name ?? "");
 
   return (
     <section id="wishes" className="border-b border-[var(--tmpl-grid)] px-6 py-20 md:px-12 md:py-28">
@@ -70,9 +71,7 @@ export function GuestBook({ data }: GuestBookProps) {
 
       <div className="mx-auto max-w-2xl gap-px bg-[var(--tmpl-grid)]">
         {wishes.length === 0 ? (
-          <p className="bg-[var(--tmpl-bg)] p-6 text-[var(--tmpl-muted)]">
-            {t("noWishes")}
-          </p>
+          <TemplateEmptyState title={t("noWishes")} className="bg-[var(--tmpl-bg)]" />
         ) : (
           wishes.map((wish, index) => (
             <TemplateSectionReveal

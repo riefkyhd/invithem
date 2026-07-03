@@ -53,3 +53,38 @@ body {
 ::selection {
   background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
+
+/* Template image treatments */
+.tmpl-img-editorial-mono {
+  filter: grayscale(100%) contrast(1.08);
+}
+.tmpl-img-dark-luxe {
+  filter: contrast(1.12) sepia(0.15) brightness(0.92);
+}
+.tmpl-img-botanical {
+  filter: saturate(0.85) contrast(0.95) brightness(1.05) sepia(0.08);
+}
+.tmpl-img-maximalist {
+  filter: saturate(1.25) contrast(1.15);
+}
+.tmpl-img-architectural {
+  filter: grayscale(0.4) contrast(1.05) saturate(0.7);
+}
+.tmpl-img-heirloom {
+  filter: sepia(0.2) contrast(0.95) brightness(1.03);
+}
+.tmpl-img-reference {
+  filter: saturate(0.95) contrast(1.02);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.tmpl-parallax-wrap img {
+  will-change: transform;
+}
+
+.prose-invite {
+  max-width: 65ch;
+}

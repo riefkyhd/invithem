@@ -66,7 +66,7 @@ export function Countdown({ data }: CountdownProps) {
                 key={unit.label}
                 className={`${style.bg} ${style.rotate} flex min-w-[72px] flex-1 flex-col items-center px-4 py-6 md:min-w-[100px] md:px-8 md:py-10`}
               >
-                <span className="tmpl-display text-[clamp(2.5rem,8vw,4.5rem)] font-black leading-none tracking-[-0.04em]">
+                <span className="tmpl-display tabular-nums text-[clamp(2.5rem,8vw,4.5rem)] font-black leading-none tracking-[-0.04em]">
                   {String(unit.value).padStart(2, "0")}
                 </span>
                 <span className="tmpl-body mt-3 text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">

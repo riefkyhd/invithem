@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
       setLoading(false);
       return;
     }
-    router.push("/admin");
+    router.push("/admin/projects");
     router.refresh();
   }
 

@@ -1,3 +1,30 @@
+export type ProjectStatus = "draft" | "published" | "archived";
+export type CollaboratorRole = "owner" | "editor";
+
+export interface Project {
+  id: string;
+  owner_id: string;
+  name: string;
+  slug: string;
+  status: ProjectStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectCollaborator {
+  project_id: string;
+  user_id: string;
+  role: CollaboratorRole;
+  created_at: string;
+}
+
+export interface InvitationView {
+  id: string;
+  project_id: string;
+  guest_id: string;
+  viewed_at: string;
+}
+
 export type GuestCategory = "family" | "friends" | "VIP" | "colleagues";
 
 export interface StoryMilestone {
@@ -30,7 +57,7 @@ export type TemplateId =
   | "romantic-heirloom";
 
 export interface AdminSettings {
-  id: number;
+  project_id: string;
   template_id: TemplateId;
   groom_name: string;
   bride_name: string;
@@ -49,7 +76,6 @@ export interface AdminSettings {
   music_path: string;
   gallery_images: GalleryImage[];
   whatsapp_number: string;
-  admin_emails: string[];
   share_message_id: string;
   share_message_en: string;
   updated_at: string;
@@ -57,6 +83,7 @@ export interface AdminSettings {
 
 export interface Guest {
   id: string;
+  project_id: string;
   name: string;
   slug: string;
   category: GuestCategory;
@@ -66,6 +93,7 @@ export interface Guest {
 
 export interface Rsvp {
   id: string;
+  project_id: string;
   guest_id: string | null;
   name: string;
   attending: boolean;
@@ -77,6 +105,7 @@ export interface Rsvp {
 
 export interface Wish {
   id: string;
+  project_id: string;
   name: string;
   message: string;
   is_hidden: boolean;

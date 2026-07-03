@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
-import { getGalleryImages } from "@/lib/invitation/template-utils";
 import type { GalleryProps } from "@/lib/types/wedding-data";
+import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
 
 const Lightbox = dynamic(
@@ -26,7 +26,8 @@ export function Gallery({ data }: GalleryProps) {
   const { t } = useI18n();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const displayImages = getGalleryImages(data);
+  const displayImages = data.gallery;
+  const isEmpty = displayImages.length === 0;
 
   const lightboxImages = displayImages.map((img) => ({
     src: img.url,
@@ -41,6 +42,11 @@ export function Gallery({ data }: GalleryProps) {
         </h2>
       </TemplateSectionReveal>
 
+      {isEmpty ? (
+        <TemplateSectionReveal motion={motion} className="px-6 md:px-12">
+          <TemplateEmptyState title={t("gallery")} />
+        </TemplateSectionReveal>
+      ) : (
       <div className="grid grid-cols-2 gap-6 px-6 md:grid-cols-3 md:gap-8 md:px-12 lg:gap-10">
         {displayImages.map((image, index) => {
           const frameClass = FRAME_CLASSES[index % FRAME_CLASSES.length];
@@ -74,6 +80,7 @@ export function Gallery({ data }: GalleryProps) {
           );
         })}
       </div>
+      )}
 
       {lightboxIndex !== null && (
         <Lightbox

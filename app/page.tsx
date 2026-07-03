@@ -1,60 +1,30 @@
-import { Suspense } from "react";
-import { TemplateRenderer } from "@/components/invitation/TemplateRenderer";
-import { buildWeddingData } from "@/lib/invitation/build-wedding-data";
-import { mergeSettings } from "@/lib/content/placeholders";
-import { createClient } from "@/lib/supabase/server";
-import type { AdminSettings, TemplateId, Wish } from "@/lib/types/database";
-import { isValidTemplateId } from "@/templates/registry";
+import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
-async function getSettings(): Promise<AdminSettings | null> {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("admin_settings")
-      .select("*")
-      .eq("id", 1)
-      .single();
-    return data as AdminSettings | null;
-  } catch {
-    return null;
-  }
-}
-
-async function getWishes(): Promise<Wish[]> {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("wishes")
-      .select("*")
-      .eq("is_hidden", false)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    return (data as Wish[]) ?? [];
-  } catch {
-    return [];
-  }
-}
-
-export default async function Home() {
-  const [settings, wishes] = await Promise.all([getSettings(), getWishes()]);
-  const merged = mergeSettings(settings);
-  const templateId: TemplateId = isValidTemplateId(merged.template_id)
-    ? merged.template_id
-    : "reference";
-
-  const weddingData = buildWeddingData(merged, { wishes });
-
+export default function LandingPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          Loading...
-        </div>
-      }
-    >
-      <TemplateRenderer templateId={templateId} data={weddingData} />
-    </Suspense>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center">
+      <p className="text-xs uppercase tracking-[0.35em] text-muted">Digital Invitations</p>
+      <h1 className="font-display mt-4 text-5xl tracking-tight md:text-7xl">
+        Invithem
+      </h1>
+      <p className="mt-6 max-w-md text-muted">
+        Beautiful, personalized wedding invitations — manage guests, RSVPs, and
+        designs from one place.
+      </p>
+      <div className="mt-10 flex flex-wrap justify-center gap-4">
+        <Link
+          href="/admin/login"
+          className="rounded-full bg-accent px-8 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+        >
+          Sign in
+        </Link>
+        <Link
+          href="/admin/projects"
+          className="rounded-full border border-card-border px-8 py-3 text-sm transition-colors hover:border-accent"
+        >
+          Dashboard
+        </Link>
+      </div>
+    </div>
   );
 }

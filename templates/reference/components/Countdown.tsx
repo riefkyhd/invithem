@@ -53,7 +53,7 @@ export function Countdown({ data }: CountdownProps) {
         <div className="mx-auto grid max-w-3xl grid-cols-4 gap-4 md:gap-8">
           {units.map((unit) => (
             <div key={unit.label} className="text-center">
-              <span className="tmpl-display block text-4xl text-[var(--tmpl-accent)] md:text-6xl">
+              <span className="tmpl-display tabular-nums block text-4xl text-[var(--tmpl-accent)] md:text-6xl">
                 {String(unit.value).padStart(2, "0")}
               </span>
               <span className="mt-2 block text-xs uppercase tracking-wider text-[var(--tmpl-muted)]">

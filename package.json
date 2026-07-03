@@ -7,7 +7,8 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:rls": "npx tsx scripts/rls-regression.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -18,6 +19,7 @@
     "framer-motion": "^12.42.2",
     "nanoid": "^5.1.16",
     "next": "16.2.10",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.80.0",
@@ -27,6 +29,7 @@
     "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

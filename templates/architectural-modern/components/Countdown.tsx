@@ -61,7 +61,7 @@ export function Countdown({ data }: CountdownProps) {
               delay={index * 0.08}
             >
               <div className="flex flex-col items-center bg-[var(--tmpl-bg)] px-4 py-8 md:px-6 md:py-10">
-                <span className="tmpl-display text-[clamp(2rem,6vw,3.5rem)] font-semibold leading-none tracking-[-0.04em]">
+                <span className="tmpl-display tabular-nums text-[clamp(2rem,6vw,3.5rem)] font-semibold leading-none tracking-[-0.04em]">
                   {String(unit.value).padStart(2, "0")}
                 </span>
                 <span className="mt-3 text-[10px] font-medium uppercase tracking-[0.3em] text-[var(--tmpl-muted)]">

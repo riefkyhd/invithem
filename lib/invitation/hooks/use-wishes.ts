@@ -16,7 +16,12 @@ const wishSchema = z.object({
 
 export type WishFormData = z.infer<typeof wishSchema>;
 
-export function useWishes(initialWishes: Wish[] = [], defaultName = "") {
+export function useWishes(
+  projectId: string,
+  projectSlug: string,
+  initialWishes: Wish[] = [],
+  defaultName = ""
+) {
   const { t } = useI18n();
   const [wishes, setWishes] = useState<Wish[]>(initialWishes);
   const [error, setError] = useState("");
@@ -30,16 +35,13 @@ export function useWishes(initialWishes: Wish[] = [], defaultName = "") {
   useEffect(() => {
     async function fetchWishes() {
       const supabase = createClient();
-      const { data } = await supabase
-        .from("wishes")
-        .select("*")
-        .eq("is_hidden", false)
-        .order("created_at", { ascending: false })
-        .limit(50);
+      const { data } = await supabase.rpc("get_project_wishes", {
+        p_project_slug: projectSlug,
+      });
       if (data) setWishes(data);
     }
     if (initialWishes.length === 0) fetchWishes();
-  }, [initialWishes.length]);
+  }, [initialWishes.length, projectSlug]);
 
   async function onSubmit(data: WishFormData) {
     setError("");
@@ -51,7 +53,11 @@ export function useWishes(initialWishes: Wish[] = [], defaultName = "") {
     const supabase = createClient();
     const { data: inserted, error: insertError } = await supabase
       .from("wishes")
-      .insert({ name: data.name, message: data.message })
+      .insert({
+        project_id: projectId,
+        name: data.name,
+        message: data.message,
+      })
       .select()
       .single();
 

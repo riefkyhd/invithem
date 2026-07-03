@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { MusicToggle } from "@/components/invitation/MusicToggle";
 import { LanguageToggle } from "@/components/invitation/LanguageToggle";
+import { GrainOverlay } from "@/templates/shared/GrainOverlay";
 import { createClient } from "@/lib/supabase/client";
 import type { TemplateId } from "@/lib/types/database";
 import type { WeddingData } from "@/lib/types/wedding-data";
@@ -16,6 +17,7 @@ import { loadTemplate } from "@/templates/registry";
 
 interface TemplateRendererProps {
   templateId: TemplateId;
+  projectSlug: string;
   data: WeddingData;
   previewMode?: boolean;
   previewLabel?: string;
@@ -23,12 +25,13 @@ interface TemplateRendererProps {
 
 export function TemplateRenderer({
   templateId,
+  projectSlug,
   data,
   previewMode = false,
   previewLabel,
 }: TemplateRendererProps) {
   const searchParams = useSearchParams();
-  const slug = searchParams.get("to");
+  const guestSlug = searchParams.get("to");
 
   const [opened, setOpened] = useState(false);
   const [guestLookup, setGuestLookup] = useState<WeddingData["guest"]>(null);
@@ -53,22 +56,22 @@ export function TemplateRenderer({
   }, [templateId]);
 
   useEffect(() => {
-    if (!slug) return;
-    const guestSlug = slug;
+    if (!guestSlug) return;
+    const slug = guestSlug;
     async function lookupGuest() {
       const supabase = createClient();
       const { data: guestRows } = await supabase.rpc("get_guest_by_slug", {
-        p_slug: guestSlug,
+        p_project_slug: projectSlug,
+        p_guest_slug: slug,
       });
       if (guestRows && guestRows.length > 0) {
         const row = guestRows[0];
-        setGuestLookup({ id: row.id, name: row.name, slug: guestSlug });
+        setGuestLookup({ id: row.id, name: row.name, slug });
+        await supabase.rpc("log_invitation_view", { p_guest_id: row.id });
       }
     }
     lookupGuest();
-  }, [slug]);
-
-  const guest = slug ? guestLookup : data.guest;
+  }, [guestSlug, projectSlug]);
 
   const resolvedData = useMemo((): WeddingData => {
     const invitationUrl =
@@ -77,10 +80,10 @@ export function TemplateRenderer({
         : data.share.invitationUrl;
     return {
       ...data,
-      guest,
+      guest: guestSlug ? guestLookup : data.guest,
       share: { ...data.share, invitationUrl },
     };
-  }, [data, guest]);
+  }, [data, guestLookup, guestSlug]);
 
   if (loading || !template) {
     return (
@@ -92,6 +95,7 @@ export function TemplateRenderer({
 
   const { components, fonts, sectionOrder } = template;
   const order = sectionOrder ?? DEFAULT_SECTION_ORDER;
+  const grainIntensity = template.grainIntensity ?? "medium";
 
   function shouldRenderSection(key: TemplateSectionKey): boolean {
     if (key === "Livestream" && !resolvedData.livestreamUrl) return false;
@@ -130,8 +134,9 @@ export function TemplateRenderer({
   return (
     <div
       data-template={templateId}
-      className={`min-h-screen tmpl-body ${fonts.className}`}
+      className={`relative min-h-screen tmpl-body ${fonts.className}`}
     >
+      <GrainOverlay intensity={grainIntensity} />
       {previewMode && (
         <div className="sticky top-0 z-[60] bg-amber-500 px-4 py-2 text-center text-sm font-medium text-black">
           Preview mode — {previewLabel ?? templateId}

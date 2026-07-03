@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n/context";
+import { useAudioVisualizer } from "@/lib/invitation/hooks/use-audio-visualizer";
 import { useTheme } from "@/lib/theme/context";
 
 interface MusicToggleProps {
@@ -10,6 +11,7 @@ interface MusicToggleProps {
 export function MusicToggle({ musicUrl }: MusicToggleProps) {
   const { t } = useI18n();
   const { musicStarted, musicMuted, toggleMusic, audioRef } = useTheme();
+  const levels = useAudioVisualizer(audioRef, musicStarted && !musicMuted);
 
   if (!musicUrl) return null;
 
@@ -38,19 +40,15 @@ export function MusicToggle({ musicUrl }: MusicToggleProps) {
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
           ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            </svg>
+            <div className="flex h-4 items-end gap-0.5" aria-hidden>
+              {levels.map((level, index) => (
+                <span
+                  key={index}
+                  className="w-0.5 rounded-full bg-current transition-[height] duration-75"
+                  style={{ height: `${Math.max(4, level * 16)}px` }}
+                />
+              ))}
+            </div>
           )}
         </button>
       )}

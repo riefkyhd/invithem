@@ -17,7 +17,11 @@ const rsvpSchema = z.object({
 
 export type RsvpFormData = z.infer<typeof rsvpSchema>;
 
-export function useRsvp(guestId?: string | null, defaultName = "") {
+export function useRsvp(
+  projectId: string,
+  guestId?: string | null,
+  defaultName = ""
+) {
   const { t } = useI18n();
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -39,6 +43,7 @@ export function useRsvp(guestId?: string | null, defaultName = "") {
     setError("");
     const supabase = createClient();
     const { error: insertError } = await supabase.from("rsvps").insert({
+      project_id: projectId,
       guest_id: guestId || null,
       name: data.name,
       attending: data.attending === "yes",

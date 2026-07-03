@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { TemplateSectionReveal } from "@/lib/invitation/template-section-reveal";
 import type { GalleryProps } from "@/lib/types/wedding-data";
+import { TemplateEmptyState } from "@/templates/shared/TemplateEmptyState";
 import { motion } from "../motion";
 
 const Lightbox = dynamic(
@@ -13,24 +14,13 @@ const Lightbox = dynamic(
   { ssr: false }
 );
 
-const PLACEHOLDER_IMAGES = [
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80",
-  "https://images.unsplash.com/photo-1465495976277-81e6c1e16d18?w=600&q=80",
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80",
-];
 
 export function Gallery({ data }: GalleryProps) {
   const { t } = useI18n();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const displayImages =
-    data.gallery.length > 0
-      ? data.gallery
-      : PLACEHOLDER_IMAGES.map((src, i) => ({
-          url: src,
-          alt: `Gallery ${i + 1}`,
-        }));
+  const displayImages = data.gallery;
+  const isEmpty = displayImages.length === 0;
 
   const lightboxImages = displayImages.map((img) => ({
     src: img.url,
@@ -45,6 +35,11 @@ export function Gallery({ data }: GalleryProps) {
         </h2>
       </TemplateSectionReveal>
 
+      {isEmpty ? (
+        <TemplateSectionReveal motion={motion}>
+          <TemplateEmptyState title={t("gallery")} />
+        </TemplateSectionReveal>
+      ) : (
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
         {displayImages.map((image, index) => (
           <TemplateSectionReveal
@@ -69,6 +64,7 @@ export function Gallery({ data }: GalleryProps) {
           </TemplateSectionReveal>
         ))}
       </div>
+      )}
 
       {lightboxIndex !== null && (
         <Lightbox

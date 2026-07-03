@@ -68,6 +68,7 @@ export interface TemplateModule {
   motion: TemplateMotionVariants;
   components: TemplateComponents;
   sectionOrder?: TemplateSectionKey[];
+  grainIntensity?: "none" | "subtle" | "medium" | "strong";
 }
 
 export interface TemplateMeta {

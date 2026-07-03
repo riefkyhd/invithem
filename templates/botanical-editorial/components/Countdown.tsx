@@ -58,7 +58,7 @@ export function Countdown({ data }: CountdownProps) {
               key={unit.label}
               className="flex min-w-[4.5rem] flex-col items-center rounded-full bg-[var(--tmpl-surface)] px-5 py-4 shadow-sm md:min-w-[5.5rem] md:px-6 md:py-5"
             >
-              <span className="tmpl-display text-3xl text-[var(--tmpl-accent-secondary)] md:text-4xl">
+              <span className="tmpl-display tabular-nums text-3xl text-[var(--tmpl-accent-secondary)] md:text-4xl">
                 {String(unit.value).padStart(2, "0")}
               </span>
               <span className="tmpl-body mt-1 text-[0.65rem] uppercase tracking-wider text-[var(--tmpl-muted)]">

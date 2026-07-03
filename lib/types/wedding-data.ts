@@ -12,6 +12,8 @@ export interface VenueBlock {
 }
 
 export interface WeddingData {
+  projectId: string;
+  projectSlug: string;
   couple: {
     groomName: string;
     brideName: string;

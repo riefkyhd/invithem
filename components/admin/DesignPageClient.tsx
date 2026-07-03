@@ -2,22 +2,28 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { updateTemplateId } from "@/app/admin/design-actions";
+import { updateTemplateId } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import type { TemplateId } from "@/lib/types/database";
 import { getAllTemplateMeta } from "@/templates/registry";
 
 interface DesignPageClientProps {
+  projectId: string;
+  projectSlug: string;
   currentTemplateId: TemplateId;
 }
 
-export function DesignPageClient({ currentTemplateId }: DesignPageClientProps) {
+export function DesignPageClient({
+  projectId,
+  projectSlug,
+  currentTemplateId,
+}: DesignPageClientProps) {
   const templates = getAllTemplateMeta();
   const [isPending, startTransition] = useTransition();
 
   function handleSelect(id: string) {
     startTransition(async () => {
-      await updateTemplateId(id);
+      await updateTemplateId(projectId, id);
     });
   }
 
@@ -55,7 +61,7 @@ export function DesignPageClient({ currentTemplateId }: DesignPageClientProps) {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/preview/${template.id}?to=demo123`}
+                    href={`/preview/${template.id}?project=${encodeURIComponent(projectSlug)}`}
                     target="_blank"
                     className="rounded-full border border-card-border px-4 py-2 text-sm transition-colors hover:border-accent"
                   >
