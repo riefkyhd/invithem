@@ -10,6 +10,7 @@ function buildMonogram(groomName: string, brideName: string): string {
 }
 
 import { projectInvitationUrl } from "@/lib/projects/urls";
+import { toMapsEmbedUrl } from "@/lib/utils/maps";
 
 export interface BuildWeddingDataContext {
   projectId: string;
@@ -17,6 +18,9 @@ export interface BuildWeddingDataContext {
   guest?: { id: string; name: string; slug: string } | null;
   wishes?: Wish[];
   invitationUrl?: string;
+  /** Frame-safe embed URLs (short links already resolved). */
+  ceremonyMapsEmbedUrl?: string;
+  receptionMapsEmbedUrl?: string;
 }
 
 export function buildWeddingData(
@@ -58,13 +62,17 @@ export function buildWeddingData(
         time: settings.ceremony_time,
         name: settings.ceremony_venue_name,
         address: settings.ceremony_venue_address,
-        mapsEmbedUrl: settings.ceremony_maps_embed_url,
+        mapsEmbedUrl:
+          context.ceremonyMapsEmbedUrl ??
+          toMapsEmbedUrl(settings.ceremony_maps_embed_url),
       },
       reception: {
         time: settings.reception_time,
         name: settings.reception_venue_name,
         address: settings.reception_venue_address,
-        mapsEmbedUrl: settings.reception_maps_embed_url,
+        mapsEmbedUrl:
+          context.receptionMapsEmbedUrl ??
+          toMapsEmbedUrl(settings.reception_maps_embed_url),
       },
     },
     story,

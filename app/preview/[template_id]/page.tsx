@@ -8,6 +8,7 @@ import {
   getProjectBySlug,
 } from "@/lib/projects/resolve-project";
 import type { TemplateId } from "@/lib/types/database";
+import { resolveMapsEmbedUrl } from "@/lib/utils/maps";
 import { getTemplateMeta, isValidTemplateId } from "@/templates/registry";
 import { notFound } from "next/navigation";
 
@@ -37,10 +38,16 @@ export default async function PreviewPage({
     getProjectWishesBySlug(projectSlug),
   ]);
   const merged = mergeSettings(settings);
+  const [ceremonyMapsEmbedUrl, receptionMapsEmbedUrl] = await Promise.all([
+    resolveMapsEmbedUrl(merged.ceremony_maps_embed_url),
+    resolveMapsEmbedUrl(merged.reception_maps_embed_url),
+  ]);
   const weddingData = buildWeddingData(merged, {
     projectId: project.id,
     projectSlug: project.slug,
     wishes,
+    ceremonyMapsEmbedUrl,
+    receptionMapsEmbedUrl,
   });
 
   return (

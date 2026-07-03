@@ -227,9 +227,9 @@ export default function AdminSettingsPage() {
               className="min-h-24"
             />
             <Input
-              label="Google Maps embed URL"
-              placeholder="https://www.google.com/maps/embed?..."
-              hint="Google Maps → Share → Embed a map"
+              label="Google Maps link"
+              placeholder="Paste any Google Maps link"
+              hint="Share link, place URL, or embed code — all work"
               value={settings.ceremony_maps_embed_url}
               onChange={(e) =>
                 updateField("ceremony_maps_embed_url", e.target.value)
@@ -262,8 +262,9 @@ export default function AdminSettingsPage() {
               className="min-h-24"
             />
             <Input
-              label="Google Maps embed URL"
-              placeholder="https://www.google.com/maps/embed?..."
+              label="Google Maps link"
+              placeholder="Paste any Google Maps link"
+              hint="Share link, place URL, or embed code — all work"
               value={settings.reception_maps_embed_url}
               onChange={(e) =>
                 updateField("reception_maps_embed_url", e.target.value)
