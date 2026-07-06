@@ -108,9 +108,11 @@ export function AdminNav({ projects, accountEmail }: AdminNavProps) {
             {PROJECT_NAV.map((item) => {
               const href = `${projectBase}${item.segment}`;
               const active =
-                "exact" in item && item.exact
-                  ? pathname === href
-                  : pathname === href || pathname.startsWith(`${href}/`);
+                item.segment === "/settings/general"
+                  ? pathname.startsWith(`${projectBase}/settings`)
+                  : "exact" in item && item.exact
+                    ? pathname === href
+                    : pathname === href || pathname.startsWith(`${href}/`);
               return (
                 <Button
                   key={item.segment}

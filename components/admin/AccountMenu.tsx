@@ -34,6 +34,7 @@ export function AccountMenu({ email }: AccountMenuProps) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-label="Account menu"
         className="flex h-8 w-8 items-center justify-center rounded-full border border-card-border bg-surface/50 text-sm font-medium transition-colors hover:border-accent/50"
       >
         {emailInitial(email)}

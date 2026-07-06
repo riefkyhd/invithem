@@ -46,6 +46,7 @@ export function PasswordGate({ preview }: PasswordGateProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter passphrase"
+          data-testid="password-gate-input"
           className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm outline-none focus:border-white/50"
           required
           autoComplete="current-password"

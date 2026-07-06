@@ -56,6 +56,7 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
           transition={motionConfig.coverExit.transition}
           role="button"
           tabIndex={0}
+          onClick={handleOpen}
           onKeyDown={(e) => e.key === "Enter" && handleOpen()}
           aria-label={t("tapToOpen")}
         >
@@ -108,7 +109,10 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
 
               <button
                 type="button"
-                onClick={handleOpen}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen();
+                }}
                 className="inline-flex items-center gap-2 rounded-full bg-[#634235] px-10 py-4 text-xs uppercase tracking-[0.12em] text-[var(--tmpl-bg)] shadow-lg transition-opacity hover:opacity-90"
               >
                 {t("openInvitation")}

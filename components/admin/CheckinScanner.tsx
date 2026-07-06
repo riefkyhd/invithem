@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { checkInGuest, getCheckinStats } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 interface CheckinScannerProps {
   projectId: string;
@@ -22,6 +24,7 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
   const scannerRef = useRef<QrScanner | null>(null);
   const [status, setStatus] = useState<ScanStatus>("idle");
   const [message, setMessage] = useState("");
+  const [manualToken, setManualToken] = useState("");
   const [stats, setStats] = useState({ checkedIn: 0, totalConfirmed: 0 });
   const processing = useRef(false);
 
@@ -29,6 +32,29 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
     const data = await getCheckinStats(projectId);
     setStats(data);
   }
+
+  const processToken = useCallback(
+    async (token: string) => {
+      if (processing.current || !token.trim()) return;
+      processing.current = true;
+      const result = await checkInGuest(projectId, token.trim());
+      setStatus(result.status as ScanStatus);
+      if (result.status === "success") {
+        setMessage(`${result.guestName} — ${result.eventLabel}`);
+      } else if (result.status === "already_checked_in") {
+        setMessage(`${result.guestName} (already checked in)`);
+      } else {
+        setMessage("Invalid or unrecognized QR code");
+      }
+      await refreshStats();
+      setTimeout(() => {
+        processing.current = false;
+        setStatus("idle");
+        setMessage("");
+      }, 3000);
+    },
+    [projectId]
+  );
 
   useEffect(() => {
     void refreshStats();
@@ -52,22 +78,7 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
 
       scanner.render(
         async (decodedText) => {
-          if (processing.current) return;
-          processing.current = true;
-          const result = await checkInGuest(projectId, decodedText);
-          setStatus(result.status as ScanStatus);
-          if (result.status === "success") {
-            setMessage(`${result.guestName} — ${result.eventLabel}`);
-          } else if (result.status === "already_checked_in") {
-            setMessage(`${result.guestName} (already checked in)`);
-          } else {
-            setMessage("Invalid or unrecognized QR code");
-          }
-          await refreshStats();
-          setTimeout(() => {
-            processing.current = false;
-            setStatus("idle");
-          }, 3000);
+          await processToken(decodedText);
         },
         () => {
           // ignore scan errors
@@ -81,13 +92,20 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
       scannerRef.current = null;
       if (scanner) void scanner.clear().catch(() => undefined);
     };
-  }, [projectId]);
+  }, [projectId, processToken]);
+
+  async function handleManualSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const token = manualToken;
+    setManualToken("");
+    await processToken(token);
+  }
 
   const statusColors: Record<ScanStatus, string> = {
     idle: "border-card-border bg-card",
     success: "border-green-500/50 bg-green-500/10 text-green-400",
     already_checked_in: "border-amber-500/50 bg-amber-500/10 text-amber-400",
-    invalid: "border-red-500/50 bg-red-500/10 text-red-400",
+    invalid: "border-red-500/50 bg-red-400/10 text-red-400",
   };
 
   return (
@@ -106,6 +124,7 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
 
       <div
         className={`mb-6 rounded-2xl border p-6 text-center transition-colors ${statusColors[status]}`}
+        data-testid="checkin-status"
       >
         {status === "idle" ? (
           <p className="text-muted">Point camera at guest QR code</p>
@@ -123,6 +142,30 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
           <p className="text-lg font-medium">{message}</p>
         )}
       </div>
+
+      <form
+        onSubmit={handleManualSubmit}
+        className="mb-6 flex flex-col gap-3 rounded-2xl border border-card-border bg-card p-5 sm:flex-row sm:items-end"
+      >
+        <div className="min-w-0 flex-1">
+          <Input
+            label="Manual code entry"
+            hint="Paste a check-in token if the camera is unavailable"
+            value={manualToken}
+            onChange={(e) => setManualToken(e.target.value)}
+            placeholder="Paste check-in token"
+            data-testid="checkin-manual-input"
+          />
+        </div>
+        <Button
+          type="submit"
+          variant="secondary"
+          disabled={!manualToken.trim()}
+          data-testid="checkin-manual-submit"
+        >
+          Check in
+        </Button>
+      </form>
 
       <div id="qr-reader" className="overflow-hidden rounded-2xl" />
     </div>

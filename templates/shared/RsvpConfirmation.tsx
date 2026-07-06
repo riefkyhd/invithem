@@ -44,6 +44,9 @@ export function RsvpConfirmation({
           <p className="mt-2 font-medium">
             {guestName} — {eventLabel}
           </p>
+          <p data-testid="checkin-token" className="sr-only">
+            {checkinToken}
+          </p>
           {qrDataUrl && (
             <div className="mt-6 flex flex-col items-center gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -8,6 +8,11 @@
     "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npx tsx scripts/run-all-tests.ts",
     "test:rls": "npx tsx scripts/rls-regression.ts",
     "test:viding": "npx tsx scripts/viding-e2e.ts"
   },
@@ -30,15 +35,18 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.10",
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

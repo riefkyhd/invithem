@@ -268,7 +268,7 @@ export function SettingsExtendedSections({
       )}
 
       {showPrivacy && (
-      <FormSection title="Privacy" description="Optional password gate for the invitation.">
+      <FormSection title="Passphrase gate" description="Optional password gate for the invitation.">
         <label className="flex items-center gap-3 text-sm">
           <input
             type="checkbox"
@@ -279,8 +279,8 @@ export function SettingsExtendedSections({
           />
           Require password to view invitation
         </label>
-        {settings.is_password_protected && (
-          <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-3">
+          {settings.is_password_protected && (
             <Input
               label="New password"
               type="password"
@@ -288,14 +288,16 @@ export function SettingsExtendedSections({
               onChange={(e) => setPassword(e.target.value)}
               hint="Leave blank to keep existing password"
             />
-            <Button type="button" size="sm" onClick={savePassword}>
-              Update password
-            </Button>
-            {passwordMsg && (
-              <p className="text-sm text-muted">{passwordMsg}</p>
-            )}
-          </div>
-        )}
+          )}
+          <Button type="button" size="sm" onClick={savePassword}>
+            {settings.is_password_protected
+              ? "Update password"
+              : "Remove password protection"}
+          </Button>
+          {passwordMsg && (
+            <p className="text-sm text-muted">{passwordMsg}</p>
+          )}
+        </div>
       </FormSection>
       )}
     </>
