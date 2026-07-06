@@ -3,10 +3,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { enUS, id as idLocale } from "date-fns/locale";
-import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 import { useTheme } from "@/lib/theme/context";
 import type { CoverProps } from "@/lib/types/wedding-data";
+import { CoverHeroImage, CoverHeroTitle } from "@/templates/shared/CoverHeroImage";
 import { motion as motionConfig } from "../motion";
 
 const DEFAULT_HERO =
@@ -61,24 +61,21 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
           aria-label={t("tapToOpen")}
         >
           <div className="relative h-[min(58vh,28rem)] w-full shrink-0 overflow-hidden">
-            <Image
+            <CoverHeroImage
               src={heroImage}
               alt={`${data.couple.groomName} & ${data.couple.brideName}`}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--tmpl-bg)]/40 to-[var(--tmpl-bg)]" />
-            <div className="absolute inset-x-0 top-12 px-6 text-center">
-              <p className="text-sm uppercase tracking-[0.3em] text-[#634235]/80">
-                {t("weddingOf")}
-              </p>
-              <h1 className="tmpl-display mt-2 text-4xl uppercase tracking-[0.2em] text-[#634235]">
-                {data.couple.groomName.split(" ")[0]} &{" "}
-                {data.couple.brideName.split(" ")[0]}
-              </h1>
-            </div>
+              imageClassName="object-top"
+            >
+              <CoverHeroTitle
+                eyebrow={t("weddingOf")}
+                title={
+                  <>
+                    {data.couple.groomName.split(" ")[0]} &{" "}
+                    {data.couple.brideName.split(" ")[0]}
+                  </>
+                }
+              />
+            </CoverHeroImage>
           </div>
 
           <div className="-mt-16 relative z-10 flex flex-1 flex-col rounded-t-[3rem] bg-[var(--tmpl-bg)] px-8 pb-8 pt-12 shadow-[0_-20px_25px_rgba(0,0,0,0.05)]">
