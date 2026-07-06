@@ -1,5 +1,6 @@
 import { Fraunces, Inter } from "next/font/google";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { listProjects } from "@/app/admin/actions";
+import { AdminShell } from "@/components/admin/AdminShell";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -15,17 +16,18 @@ const inter = Inter({
 
 export const dynamic = "force-dynamic";
 
-export default function AdminDashboardLayout({
+export default async function AuthenticatedAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const projects = await listProjects();
+
   return (
     <div
       className={`${fraunces.variable} ${inter.variable} min-h-screen bg-background`}
     >
-      <AdminNav />
-      <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
+      <AdminShell projects={projects}>{children}</AdminShell>
     </div>
   );
 }

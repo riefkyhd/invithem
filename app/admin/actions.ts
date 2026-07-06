@@ -28,7 +28,10 @@ import bcrypt from "bcryptjs";
 function revalidateProject(projectId: string, projectSlug?: string) {
   revalidatePath("/admin/projects");
   revalidatePath(`/admin/projects/${projectId}`);
-  revalidatePath(`/admin/projects/${projectId}/settings`);
+    revalidatePath(`/admin/projects/${projectId}/settings/general`);
+    revalidatePath(`/admin/projects/${projectId}/settings/content`);
+    revalidatePath(`/admin/projects/${projectId}/settings/media`);
+    revalidatePath(`/admin/projects/${projectId}/settings/privacy`);
   revalidatePath(`/admin/projects/${projectId}/guests`);
   revalidatePath(`/admin/projects/${projectId}/rsvps`);
   revalidatePath(`/admin/projects/${projectId}/wishes`);
@@ -55,6 +58,47 @@ export async function signOut() {
 export async function listProjects(): Promise<Project[]> {
   const projects = await getUserProjects();
   return projects as Project[];
+}
+
+export async function getAccountProfile(): Promise<{
+  email: string;
+  createdAt: string;
+} | null> {
+  const user = await getAuthenticatedUser();
+  return {
+    email: user.email ?? "",
+    createdAt: user.created_at ?? "",
+  };
+}
+
+export async function updateProject(
+  projectId: string,
+  input: { name?: string; slug?: string }
+) {
+  await assertProjectAccess(projectId);
+  const updates: { name?: string; slug?: string; updated_at: string } = {
+    updated_at: new Date().toISOString(),
+  };
+  if (input.name?.trim()) updates.name = input.name.trim();
+  if (input.slug !== undefined) {
+    const slug = slugify(input.slug);
+    if (!slug) return { error: "Invalid slug" };
+    updates.slug = slug;
+  }
+
+  const supabase = await createClient();
+  const { data: project, error } = await supabase
+    .from("projects")
+    .update(updates)
+    .eq("id", projectId)
+    .select("slug")
+    .single();
+
+  if (error) return { error: error.message };
+  if (!project) return { error: "Update failed" };
+  revalidateProject(projectId, project.slug);
+  revalidatePath("/admin/projects");
+  return { success: true };
 }
 
 export async function getProject(projectId: string): Promise<Project | null> {

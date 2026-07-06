@@ -19,7 +19,15 @@ import type { TemplateModule } from "@/templates/types";
 const templateModule: TemplateModule = {
   fonts,
   motion,
-  grainIntensity: "medium",
+  grainIntensity: "none",
+  sectionOrder: [
+    "OurStory",
+    "EventDetails",
+    "RsvpForm",
+    "GiftEnvelope",
+    "GuestBook",
+    "Footer",
+  ],
   components: {
     Cover,
     OpeningBlock,

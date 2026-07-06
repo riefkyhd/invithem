@@ -23,33 +23,30 @@ export function Footer({ data }: FooterProps) {
   }
 
   return (
-    <>
-      <section className="px-6 py-16 md:px-12 lg:px-24">
-        <TemplateSectionReveal motion={motion} className="text-center">
-          <button
-            type="button"
-            onClick={handleShare}
-            className="rounded-full border border-[var(--tmpl-card-border)] bg-[var(--tmpl-surface)] px-6 py-3 text-sm transition-colors hover:border-[var(--tmpl-accent)]"
-          >
-            {t("share")}
-          </button>
-        </TemplateSectionReveal>
-      </section>
-      <footer className="border-t border-[var(--tmpl-card-border)] px-6 py-12 text-center">
-        <p className="tmpl-display text-lg text-[var(--tmpl-muted)]">
-          {data.couple.groomName} & {data.couple.brideName}
+    <footer className="border-t border-[var(--tmpl-card-border)] px-6 py-16 text-center">
+      <TemplateSectionReveal motion={motion}>
+        <button
+          type="button"
+          onClick={handleShare}
+          className="mb-10 rounded-full border border-[var(--tmpl-card-border)] bg-white px-6 py-3 text-sm text-[var(--tmpl-heading)] transition-colors hover:border-[var(--tmpl-gold)]"
+        >
+          {t("share")}
+        </button>
+
+        <p className="tmpl-display text-2xl text-[var(--tmpl-heading)]">
+          {data.couple.groomName.split(" ")[0]} & {data.couple.brideName.split(" ")[0]}
         </p>
+
         {sustainability?.trim() && (
-          <p className="mx-auto mt-6 max-w-md text-xs uppercase tracking-wider text-[var(--tmpl-muted)]/70">
+          <p className="mx-auto mt-6 max-w-md text-xs uppercase tracking-wider text-[var(--tmpl-muted)]">
             {sustainability}
           </p>
         )}
+
         {data.footer.credit?.trim() && (
-          <p className="mt-3 text-xs text-[var(--tmpl-muted)]/50">
-            {data.footer.credit}
-          </p>
+          <p className="mt-4 text-xs text-[var(--tmpl-muted)]">{data.footer.credit}</p>
         )}
-      </footer>
-    </>
+      </TemplateSectionReveal>
+    </footer>
   );
 }

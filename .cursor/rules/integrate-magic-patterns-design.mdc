@@ -1,0 +1,37 @@
+---
+description: Adapt Magic Patterns prototypes into this codebase using existing templates, tokens, and conventions — not verbatim Tailwind exports.
+globs:
+  - templates/**
+  - components/**
+  - app/**
+alwaysApply: false
+---
+
+# Integrate a Magic Patterns Design
+
+Magic Patterns generates **prototypes**. Treat exported code as a design spec (layout, hierarchy, spacing, interactions), not production code to paste verbatim.
+
+**Golden rule:** when the Magic Patterns code and this codebase disagree, **the codebase wins**.
+
+## This project
+
+- Next.js App Router, React, Tailwind v4
+- Wedding invitation templates live in `templates/` with shared primitives in `templates/shared/`
+- Admin UI in `components/admin/` — match existing card, form, and nav patterns
+- Reuse template section components (`OpeningBlock`, `EventDetails`, `RsvpForm`, etc.) instead of duplicating UI
+- Match existing color tokens, typography (`font-display`, `text-muted`, `bg-card`), and spacing
+
+## Workflow
+
+1. Read the Magic Patterns design (via MCP URL or exported files). Identify screens, components, states, and mock data shapes.
+2. Survey this repo: find the closest existing template or admin page and use it as the structural template.
+3. Map prototype elements to codebase equivalents (buttons, inputs, cards, icons, routing).
+4. Implement in the correct folder (`templates/<name>/components/` or `components/admin/`), wire real data, discard Vite scaffolding and mock data.
+5. Verify against the design for intent (not pixel-perfect arbitrary values) and run `npm run build`.
+
+## Discard from exports
+
+- Vite scaffolding (`vite.config.ts`, `index.html`, root `package.json`)
+- Prototype `tailwind.config.js` / global CSS — merge only genuinely new tokens
+- `data-id` props, `utils/mockData.ts`, editor preview files
+- New dependencies (lucide-react, framer-motion) unless already in this project

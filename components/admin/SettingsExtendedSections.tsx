@@ -39,6 +39,8 @@ interface SettingsExtendedProps {
     value: AdminSettings[K]
   ) => void;
   onEventsChange: (events: Omit<WeddingEvent, "created_at" | "project_id">[]) => void;
+  /** When set, only render matching sections */
+  sections?: "content" | "privacy";
 }
 
 export function SettingsExtendedSections({
@@ -47,6 +49,7 @@ export function SettingsExtendedSections({
   events,
   onSettingsChange,
   onEventsChange,
+  sections,
 }: SettingsExtendedProps) {
   const [password, setPassword] = useState("");
   const [passwordMsg, setPasswordMsg] = useState("");
@@ -83,8 +86,13 @@ export function SettingsExtendedSections({
     setTimeout(() => setPasswordMsg(""), 3000);
   }
 
+  const showContent = !sections || sections === "content";
+  const showPrivacy = !sections || sections === "privacy";
+
   return (
     <>
+      {showContent && (
+        <>
       <FormSection title="Parents" description="Free-text parent names with honorifics.">
         <div className="grid gap-5 sm:grid-cols-2">
           <Input
@@ -256,7 +264,10 @@ export function SettingsExtendedSections({
           onChange={(e) => onSettingsChange("footer_credit", e.target.value)}
         />
       </FormSection>
+        </>
+      )}
 
+      {showPrivacy && (
       <FormSection title="Privacy" description="Optional password gate for the invitation.">
         <label className="flex items-center gap-3 text-sm">
           <input
@@ -286,6 +297,7 @@ export function SettingsExtendedSections({
           </div>
         )}
       </FormSection>
+      )}
     </>
   );
 }

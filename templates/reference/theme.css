@@ -1,12 +1,18 @@
 [data-template="reference"] {
-  --tmpl-bg: #0b0b0a;
-  --tmpl-fg: #f5f1ea;
-  --tmpl-muted: #a8a29e;
-  --tmpl-accent: #6b7a5e;
-  --tmpl-accent-fg: #f5f1ea;
-  --tmpl-card: #141413;
-  --tmpl-card-border: #2a2a28;
-  --tmpl-surface: #1a1a18;
+  --tmpl-bg: #faf9f6;
+  --tmpl-fg: #4a3728;
+  --tmpl-heading: #4a3728;
+  --tmpl-muted: #6b7280;
+  --tmpl-body-muted: #4b5563;
+  --tmpl-accent: #b6916b;
+  --tmpl-accent-fg: #faf9f6;
+  --tmpl-gold: #c5a059;
+  --tmpl-cream: #f9f6f0;
+  --tmpl-card: #ffffff;
+  --tmpl-card-border: #e7d8c9;
+  --tmpl-surface: #ffffff;
+  --tmpl-section-tint: rgba(231, 216, 201, 0.3);
+  --tmpl-dark: #4a3728;
   background-color: var(--tmpl-bg);
   color: var(--tmpl-fg);
 }

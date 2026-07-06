@@ -30,6 +30,27 @@ function handleLegacyRedirects(request: NextRequest): NextResponse | null {
   return null;
 }
 
+function handleLegacyAdminRedirects(request: NextRequest): NextResponse | null {
+  const pathname = request.nextUrl.pathname;
+  const legacyFlat = [
+    "/admin/guests",
+    "/admin/rsvps",
+    "/admin/wishes",
+    "/admin/design",
+  ];
+  if (legacyFlat.includes(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/projects";
+    return NextResponse.redirect(url);
+  }
+  if (pathname === "/admin") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/projects";
+    return NextResponse.redirect(url);
+  }
+  return null;
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isWeddingRoute =
@@ -41,6 +62,9 @@ export async function middleware(request: NextRequest) {
     if (redirect) return redirect;
     return NextResponse.next();
   }
+
+  const legacyAdmin = handleLegacyAdminRedirects(request);
+  if (legacyAdmin) return legacyAdmin;
 
   let supabaseResponse = NextResponse.next({ request });
 

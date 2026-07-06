@@ -7,11 +7,13 @@ import type { Project } from "@/lib/types/database";
 interface ProjectSwitcherProps {
   projects: Project[];
   currentProjectId: string;
+  currentPathSuffix?: string;
 }
 
 export function ProjectSwitcher({
   projects,
   currentProjectId,
+  currentPathSuffix = "",
 }: ProjectSwitcherProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -27,16 +29,16 @@ export function ProjectSwitcher({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  function closeMenu() {
-    setOpen(false);
+  function projectHref(id: string) {
+    return `/admin/projects/${id}${currentPathSuffix}`;
   }
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative min-w-0">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex max-w-[200px] items-center gap-2 rounded-full border border-card-border bg-surface/50 px-3 py-1.5 text-sm transition-colors hover:border-accent/50 sm:max-w-[240px]"
+        className="flex max-w-[min(100%,14rem)] items-center gap-2 rounded-lg border border-card-border bg-surface/50 px-3 py-1.5 text-sm transition-colors hover:border-accent/50"
       >
         <span className="truncate font-medium">
           {current?.name ?? "Select project"}
@@ -46,6 +48,7 @@ export function ProjectSwitcher({
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden
         >
           <path
             strokeLinecap="round"
@@ -57,15 +60,15 @@ export function ProjectSwitcher({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-card-border bg-card shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-xl border border-card-border bg-card shadow-lg">
           <div className="max-h-64 overflow-y-auto py-1">
             {projects.map((project) => {
               const isCurrent = project.id === currentProjectId;
               return (
                 <Link
                   key={project.id}
-                  href={`/admin/projects/${project.id}`}
-                  onClick={closeMenu}
+                  href={projectHref(project.id)}
+                  onClick={() => setOpen(false)}
                   className={`block px-4 py-2.5 text-sm transition-colors ${
                     isCurrent
                       ? "bg-accent/15 font-medium text-accent"
@@ -81,14 +84,14 @@ export function ProjectSwitcher({
           <div className="border-t border-card-border">
             <Link
               href="/admin/projects"
-              onClick={closeMenu}
+              onClick={() => setOpen(false)}
               className="block px-4 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
             >
               All projects
             </Link>
             <Link
               href="/admin/projects/new"
-              onClick={closeMenu}
+              onClick={() => setOpen(false)}
               className="block px-4 py-2.5 text-sm text-accent transition-colors hover:bg-surface"
             >
               + New project
