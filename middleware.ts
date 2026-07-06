@@ -1,7 +1,47 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+function handleLegacyRedirects(request: NextRequest): NextResponse | null {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname === "/" && request.nextUrl.searchParams.has("to")) {
+    const guestSlug = request.nextUrl.searchParams.get("to");
+    if (guestSlug) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/w/my-wedding/${guestSlug}`;
+      url.searchParams.delete("to");
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
+  const weddingMatch = pathname.match(/^\/w\/([^/]+)$/);
+  if (weddingMatch && request.nextUrl.searchParams.has("to")) {
+    const guestSlug = request.nextUrl.searchParams.get("to");
+    if (guestSlug) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/w/${weddingMatch[1]}/${guestSlug}`;
+      url.searchParams.delete("to");
+      const event = request.nextUrl.searchParams.get("event");
+      if (event) url.searchParams.set("event", event);
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
+  return null;
+}
+
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const isWeddingRoute =
+    pathname.startsWith("/w/") ||
+    (pathname === "/" && request.nextUrl.searchParams.has("to"));
+
+  if (isWeddingRoute) {
+    const redirect = handleLegacyRedirects(request);
+    if (redirect) return redirect;
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -29,7 +69,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
   const isAdminRoute = pathname.startsWith("/admin");
   const isLoginPage = pathname === "/admin/login";
 
@@ -43,31 +82,6 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/projects";
     return NextResponse.redirect(url);
-  }
-
-  // Legacy: /?to=guest → /w/my-wedding/guest
-  if (pathname === "/" && request.nextUrl.searchParams.has("to")) {
-    const guestSlug = request.nextUrl.searchParams.get("to");
-    if (guestSlug) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/w/my-wedding/${guestSlug}`;
-      url.searchParams.delete("to");
-      return NextResponse.redirect(url, 301);
-    }
-  }
-
-  // Legacy: /w/slug?to=guest → /w/slug/guest
-  const weddingMatch = pathname.match(/^\/w\/([^/]+)$/);
-  if (weddingMatch && request.nextUrl.searchParams.has("to")) {
-    const guestSlug = request.nextUrl.searchParams.get("to");
-    if (guestSlug) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/w/${weddingMatch[1]}/${guestSlug}`;
-      url.searchParams.delete("to");
-      const event = request.nextUrl.searchParams.get("event");
-      if (event) url.searchParams.set("event", event);
-      return NextResponse.redirect(url, 301);
-    }
   }
 
   if (pathname === "/admin" && user) {

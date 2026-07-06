@@ -85,3 +85,14 @@ export async function loadTemplate(id: TemplateId): Promise<TemplateModule> {
       return (await import("./reference")).default;
   }
 }
+
+const templateLoadPromises = new Map<TemplateId, Promise<TemplateModule>>();
+
+/** Start template chunk load during SSR; pass the promise to TemplateRenderer. */
+export function createTemplateLoadPromise(id: TemplateId): Promise<TemplateModule> {
+  const existing = templateLoadPromises.get(id);
+  if (existing) return existing;
+  const promise = loadTemplate(id);
+  templateLoadPromises.set(id, promise);
+  return promise;
+}

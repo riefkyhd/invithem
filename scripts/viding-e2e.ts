@@ -74,6 +74,11 @@ async function main() {
   if (!settings?.[0]?.groom_father_name !== undefined) {
     console.log("PASS: Extended settings fields accessible");
   }
+  if (settings?.[0]?.access_password_hash) {
+    console.error("FAIL: password hash exposed via get_project_settings");
+    process.exit(1);
+  }
+  console.log("PASS: password hash not exposed in settings RPC");
 
   const { data: rpcEvents } = await anon.rpc("get_project_events", {
     p_project_slug: project.slug,
@@ -106,6 +111,8 @@ async function main() {
       (guestWithEvents[0] as { event_ids?: string[] }).event_ids?.[0] ??
       events[0].id;
 
+    await admin.from("rsvps").delete().eq("guest_id", guest.id);
+
     const { data: rsvpId, error: rsvpErr } = await anon.rpc("submit_public_rsvp", {
       p_project_id: project.id,
       p_event_id: invitedEventId,
@@ -130,6 +137,7 @@ async function main() {
 
     const { data: checkin } = await anon.rpc("check_in_guest", {
       p_token: token,
+      p_project_id: project.id,
     });
     if (!checkin?.[0]?.success) {
       console.error("FAIL: check_in_guest");

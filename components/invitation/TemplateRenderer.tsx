@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { MusicToggle } from "@/components/invitation/MusicToggle";
 import { LanguageToggle } from "@/components/invitation/LanguageToggle";
@@ -14,10 +14,10 @@ import {
   type TemplateModule,
   type TemplateSectionKey,
 } from "@/templates/types";
-import { loadTemplate } from "@/templates/registry";
 
 interface TemplateRendererProps {
   templateId: TemplateId;
+  templatePromise: Promise<TemplateModule>;
   projectSlug: string;
   guestSlug?: string;
   data: WeddingData;
@@ -27,6 +27,7 @@ interface TemplateRendererProps {
 
 export function TemplateRenderer({
   templateId,
+  templatePromise,
   projectSlug,
   guestSlug,
   data,
@@ -35,27 +36,9 @@ export function TemplateRenderer({
 }: TemplateRendererProps) {
   const searchParams = useSearchParams();
   const highlightEvent = searchParams.get("event") ?? undefined;
+  const template = use(templatePromise);
 
   const [opened, setOpened] = useState(false);
-  const [template, setTemplate] = useState<TemplateModule | null>(null);
-  const [loadedTemplateId, setLoadedTemplateId] = useState<TemplateId | null>(
-    null
-  );
-
-  const loading = loadedTemplateId !== templateId;
-
-  useEffect(() => {
-    let cancelled = false;
-    loadTemplate(templateId).then((mod) => {
-      if (!cancelled) {
-        setTemplate(mod);
-        setLoadedTemplateId(templateId);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [templateId]);
 
   useEffect(() => {
     if (!guestSlug || !data.guest) return;
@@ -84,14 +67,6 @@ export function TemplateRenderer({
       share: { ...data.share, invitationUrl },
     };
   }, [data]);
-
-  if (loading || !template) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-950 text-neutral-400">
-        Loading...
-      </div>
-    );
-  }
 
   const { components, fonts, sectionOrder } = template;
   const order = sectionOrder ?? DEFAULT_SECTION_ORDER;

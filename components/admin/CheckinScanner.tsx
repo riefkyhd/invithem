@@ -1,6 +1,5 @@
 "use client";
 
-import { Html5QrcodeScanner } from "html5-qrcode";
 import { useEffect, useRef, useState } from "react";
 import { checkInGuest, getCheckinStats } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -11,8 +10,16 @@ interface CheckinScannerProps {
 
 type ScanStatus = "idle" | "success" | "already_checked_in" | "invalid";
 
+type QrScanner = {
+  render: (
+    onSuccess: (decodedText: string) => void,
+    onError: (error: string) => void
+  ) => void;
+  clear: () => Promise<void>;
+};
+
 export function CheckinScanner({ projectId }: CheckinScannerProps) {
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<QrScanner | null>(null);
   const [status, setStatus] = useState<ScanStatus>("idle");
   const [message, setMessage] = useState("");
   const [stats, setStats] = useState({ checkedIn: 0, totalConfirmed: 0 });
@@ -30,39 +37,49 @@ export function CheckinScanner({ projectId }: CheckinScannerProps) {
   }, [projectId]);
 
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    );
-    scannerRef.current = scanner;
+    let cancelled = false;
 
-    scanner.render(
-      async (decodedText) => {
-        if (processing.current) return;
-        processing.current = true;
-        const result = await checkInGuest(projectId, decodedText);
-        setStatus(result.status as ScanStatus);
-        if (result.status === "success") {
-          setMessage(`${result.guestName} — ${result.eventLabel}`);
-        } else if (result.status === "already_checked_in") {
-          setMessage(`${result.guestName} (already checked in)`);
-        } else {
-          setMessage("Invalid or unrecognized QR code");
+    void (async () => {
+      const { Html5QrcodeScanner } = await import("html5-qrcode");
+      if (cancelled) return;
+
+      const scanner = new Html5QrcodeScanner(
+        "qr-reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        false
+      );
+      scannerRef.current = scanner;
+
+      scanner.render(
+        async (decodedText) => {
+          if (processing.current) return;
+          processing.current = true;
+          const result = await checkInGuest(projectId, decodedText);
+          setStatus(result.status as ScanStatus);
+          if (result.status === "success") {
+            setMessage(`${result.guestName} — ${result.eventLabel}`);
+          } else if (result.status === "already_checked_in") {
+            setMessage(`${result.guestName} (already checked in)`);
+          } else {
+            setMessage("Invalid or unrecognized QR code");
+          }
+          await refreshStats();
+          setTimeout(() => {
+            processing.current = false;
+            setStatus("idle");
+          }, 3000);
+        },
+        () => {
+          // ignore scan errors
         }
-        await refreshStats();
-        setTimeout(() => {
-          processing.current = false;
-          setStatus("idle");
-        }, 3000);
-      },
-      () => {
-        // ignore scan errors
-      }
-    );
+      );
+    })();
 
     return () => {
-      void scanner.clear().catch(() => undefined);
+      cancelled = true;
+      const scanner = scannerRef.current;
+      scannerRef.current = null;
+      if (scanner) void scanner.clear().catch(() => undefined);
     };
   }, [projectId]);
 

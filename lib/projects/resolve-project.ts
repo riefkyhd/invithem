@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type {
   AdminSettings,
@@ -6,6 +7,84 @@ import type {
   Wish,
 } from "@/lib/types/database";
 import type { WeddingGuest } from "@/lib/types/wedding-data";
+
+export interface WeddingPageSources {
+  project: Project;
+  settings: AdminSettings;
+  wishes: Wish[];
+  events: WeddingEvent[];
+  guest: WeddingGuest | null;
+}
+
+function mapGuestRow(
+  row: {
+    id: string;
+    name: string;
+    slug: string;
+    event_ids: string[];
+  } | null
+): WeddingGuest | null {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    eventIds: row.event_ids ?? [],
+  };
+}
+
+/** One Supabase client, parallel RPCs — avoids sequential round-trips per page load. */
+export const fetchWeddingPageSources = cache(
+  async (
+    projectSlug: string,
+    guestSlug?: string
+  ): Promise<WeddingPageSources | null> => {
+    const supabase = await createClient();
+
+    const [projectRes, settingsRes, wishesRes, eventsRes, guestRes] =
+      await Promise.all([
+        supabase.rpc("get_project_by_slug", { p_slug: projectSlug }),
+        supabase.rpc("get_project_settings", {
+          p_project_slug: projectSlug,
+        }),
+        supabase.rpc("get_project_wishes", {
+          p_project_slug: projectSlug,
+        }),
+        supabase.rpc("get_project_events", {
+          p_project_slug: projectSlug,
+        }),
+        guestSlug
+          ? supabase.rpc("get_guest_with_events", {
+              p_project_slug: projectSlug,
+              p_guest_slug: guestSlug,
+            })
+          : Promise.resolve({ data: null, error: null }),
+      ]);
+
+    const project = projectRes.data?.[0] as Project | undefined;
+    if (!project || project.status !== "published") return null;
+
+    const settingsRow = settingsRes.data?.[0] as AdminSettings | undefined;
+    const settings = settingsRow
+      ? { ...settingsRow, access_password_hash: null }
+      : null;
+    if (!settings) return null;
+
+    const guestRow = guestRes.data?.[0] as
+      | { id: string; name: string; slug: string; event_ids: string[] }
+      | undefined;
+
+    if (guestSlug && !guestRow) return null;
+
+    return {
+      project,
+      settings,
+      wishes: (wishesRes.data as Wish[]) ?? [],
+      events: (eventsRes.data as WeddingEvent[]) ?? [],
+      guest: guestSlug ? mapGuestRow(guestRow ?? null) : null,
+    };
+  }
+);
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const supabase = await createClient();
@@ -22,7 +101,8 @@ export async function getProjectSettingsBySlug(
     p_project_slug: slug,
   });
   if (!data || data.length === 0) return null;
-  return data[0] as AdminSettings;
+  const row = data[0] as AdminSettings;
+  return { ...row, access_password_hash: null };
 }
 
 export async function getProjectWishesBySlug(slug: string): Promise<Wish[]> {
@@ -53,26 +133,14 @@ export async function getGuestWithEvents(
     p_guest_slug: guestSlug,
   });
   if (!data || data.length === 0) return null;
-  const row = data[0] as {
-    id: string;
-    name: string;
-    slug: string;
-    event_ids: string[];
-  };
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    eventIds: row.event_ids ?? [],
-  };
-}
-
-export async function hasProjectAccessCookie(
-  projectId: string
-): Promise<boolean> {
-  const { cookies } = await import("next/headers");
-  const cookieStore = await cookies();
-  return cookieStore.get(`invithem_access_${projectId}`)?.value === "1";
+  return mapGuestRow(
+    data[0] as {
+      id: string;
+      name: string;
+      slug: string;
+      event_ids: string[];
+    }
+  );
 }
 
 export async function requirePublishedProject(slug: string): Promise<Project> {

@@ -2,6 +2,11 @@
 
 import { cookies } from "next/headers";
 import { generateCheckinToken } from "@/lib/checkin/token";
+import {
+  cookieName,
+  createProjectAccessCookieValue,
+  projectAccessCookieMaxAge,
+} from "@/lib/auth/project-access-cookie";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
@@ -22,9 +27,11 @@ export async function submitRsvp(input: {
     p_project_id: input.projectId,
     p_event_id: input.eventId,
     p_guest_id: input.guestId || null,
-    p_name: input.name,
+    p_name: input.name.trim().slice(0, 200),
     p_attending: input.attending,
-    p_guest_count: input.attending ? input.guestCount : 0,
+    p_guest_count: input.attending
+      ? Math.min(10, Math.max(0, input.guestCount))
+      : 0,
     p_meal_preference: input.mealPreference || null,
     p_message: input.message || null,
   });
@@ -53,8 +60,8 @@ export async function verifyProjectPassword(
   projectId: string,
   password: string
 ) {
-  const supabase = await createClient();
-  const { data: settings } = await supabase
+  const admin = createAdminClient();
+  const { data: settings } = await admin
     .from("admin_settings")
     .select("access_password_hash, is_password_protected")
     .eq("project_id", projectId)
@@ -68,11 +75,11 @@ export async function verifyProjectPassword(
   if (!valid) return { error: "Invalid password" };
 
   const cookieStore = await cookies();
-  cookieStore.set(`invithem_access_${projectId}`, "1", {
+  cookieStore.set(cookieName(projectId), createProjectAccessCookieValue(projectId), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: projectAccessCookieMaxAge,
     path: "/",
   });
 

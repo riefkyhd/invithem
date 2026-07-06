@@ -1,75 +1,83 @@
-import { buildWeddingData } from "@/lib/invitation/build-wedding-data";
+import { cache } from "react";
 import { mergeSettings } from "@/lib/content/placeholders";
-import {
-  getGuestWithEvents,
-  getProjectBySlug,
-  getProjectEventsBySlug,
-  getProjectSettingsBySlug,
-  getProjectWishesBySlug,
-  hasProjectAccessCookie,
-} from "@/lib/projects/resolve-project";
+import { buildWeddingData } from "@/lib/invitation/build-wedding-data";
+import { resolveEventMapsUrls } from "@/lib/invitation/resolve-event-maps";
+import { hasProjectAccessCookie } from "@/lib/projects/project-access";
+import { fetchWeddingPageSources } from "@/lib/projects/resolve-project";
 import { projectInvitationUrl } from "@/lib/projects/urls";
 import type { TemplateId } from "@/lib/types/database";
-import type { WeddingData, WeddingGuest } from "@/lib/types/wedding-data";
-import { resolveMapsEmbedUrl } from "@/lib/utils/maps";
+import type { WeddingData } from "@/lib/types/wedding-data";
 import { isValidTemplateId } from "@/templates/registry";
 import { notFound } from "next/navigation";
 
+export interface PasswordGatePreview {
+  projectId: string;
+  groomName: string;
+  brideName: string;
+}
+
 export interface WeddingPageData {
   templateId: TemplateId;
-  weddingData: WeddingData;
+  weddingData: WeddingData | null;
   requiresPassword: boolean;
   hasAccess: boolean;
+  gatePreview: PasswordGatePreview | null;
 }
 
-export async function loadWeddingPageData(
-  projectSlug: string,
-  guestSlug?: string
-): Promise<WeddingPageData> {
-  const project = await getProjectBySlug(projectSlug);
-  if (!project || project.status !== "published") notFound();
+export const loadWeddingPageData = cache(
+  async (
+    projectSlug: string,
+    guestSlug?: string,
+    options?: { bypassPasswordGate?: boolean }
+  ): Promise<WeddingPageData> => {
+    const sources = await fetchWeddingPageSources(projectSlug, guestSlug);
+    if (!sources) notFound();
 
-  const [settings, wishes, events] = await Promise.all([
-    getProjectSettingsBySlug(projectSlug),
-    getProjectWishesBySlug(projectSlug),
-    getProjectEventsBySlug(projectSlug),
-  ]);
+    const merged = mergeSettings(sources.settings);
+    const requiresPassword = merged.is_password_protected;
 
-  let guest: WeddingGuest | null = null;
-  if (guestSlug) {
-    guest = await getGuestWithEvents(projectSlug, guestSlug);
-    if (!guest) notFound();
+    if (
+      requiresPassword &&
+      !options?.bypassPasswordGate &&
+      !(await hasProjectAccessCookie(sources.project.id))
+    ) {
+      return {
+        templateId: "reference",
+        weddingData: null,
+        requiresPassword: true,
+        hasAccess: false,
+        gatePreview: {
+          projectId: sources.project.id,
+          groomName: merged.groom_name,
+          brideName: merged.bride_name,
+        },
+      };
+    }
+
+    const templateId: TemplateId = isValidTemplateId(merged.template_id)
+      ? merged.template_id
+      : "reference";
+
+    const resolvedMapsUrls = await resolveEventMapsUrls(sources.events);
+
+    const weddingData = buildWeddingData(merged, {
+      projectId: sources.project.id,
+      projectSlug: sources.project.slug,
+      guest: sources.guest,
+      wishes: sources.wishes,
+      events: sources.events,
+      resolvedMapsUrls,
+      invitationUrl: guestSlug
+        ? projectInvitationUrl(sources.project.slug, guestSlug)
+        : projectInvitationUrl(sources.project.slug),
+    });
+
+    return {
+      templateId,
+      weddingData,
+      requiresPassword,
+      hasAccess: true,
+      gatePreview: null,
+    };
   }
-
-  const merged = mergeSettings(settings);
-  const templateId: TemplateId = isValidTemplateId(merged.template_id)
-    ? merged.template_id
-    : "reference";
-
-  const resolvedMapsUrls: Record<string, string> = {};
-  await Promise.all(
-    events.map(async (event) => {
-      resolvedMapsUrls[event.id] = await resolveMapsEmbedUrl(
-        event.maps_embed_url
-      );
-    })
-  );
-
-  const weddingData = buildWeddingData(merged, {
-    projectId: project.id,
-    projectSlug: project.slug,
-    guest,
-    wishes,
-    events,
-    resolvedMapsUrls,
-    invitationUrl: guestSlug
-      ? projectInvitationUrl(project.slug, guestSlug)
-      : projectInvitationUrl(project.slug),
-  });
-
-  const requiresPassword = merged.is_password_protected;
-  const hasAccess =
-    !requiresPassword || (await hasProjectAccessCookie(project.id));
-
-  return { templateId, weddingData, requiresPassword, hasAccess };
-}
+);

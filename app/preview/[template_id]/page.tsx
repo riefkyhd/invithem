@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { TemplateRenderer } from "@/components/invitation/TemplateRenderer";
 import { loadWeddingPageData } from "@/lib/invitation/load-wedding-page";
-import { getTemplateMeta, isValidTemplateId } from "@/templates/registry";
+import { createTemplateLoadPromise, getTemplateMeta, isValidTemplateId } from "@/templates/registry";
 import type { TemplateId } from "@/lib/types/database";
 import { notFound } from "next/navigation";
 
@@ -21,7 +21,13 @@ export default async function PreviewPage({
 
   const projectSlug = projectSlugParam ?? "my-wedding";
   const meta = getTemplateMeta(template_id);
-  const { weddingData } = await loadWeddingPageData(projectSlug);
+  const { weddingData } = await loadWeddingPageData(projectSlug, undefined, {
+    bypassPasswordGate: true,
+  });
+
+  if (!weddingData) notFound();
+
+  const templatePromise = createTemplateLoadPromise(template_id as TemplateId);
 
   return (
     <Suspense
@@ -33,6 +39,7 @@ export default async function PreviewPage({
     >
       <TemplateRenderer
         templateId={template_id as TemplateId}
+        templatePromise={templatePromise}
         projectSlug={projectSlug}
         data={weddingData}
         previewMode

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { mergeSettings } from "@/lib/content/placeholders";
+import { pickUpdatableSettings } from "@/lib/admin/settings-allowlist";
 import {
   assertProjectAccess,
   generateGuestSlug,
@@ -468,9 +469,9 @@ export async function updateSettings(
     .eq("id", projectId)
     .single();
 
-  const { project_id: _pid, ...rest } = settings as Partial<AdminSettings> & {
-    project_id?: string;
-  };
+  const { project_id: _pid, ...rest } = pickUpdatableSettings(
+    settings as Partial<AdminSettings> & { project_id?: string }
+  );
 
   const { error } = await supabase
     .from("admin_settings")
@@ -620,6 +621,7 @@ export async function checkInGuest(projectId: string, token: string) {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("check_in_guest", {
     p_token: token,
+    p_project_id: projectId,
   });
   if (error) return { error: error.message, status: "invalid" as const };
   const row = data?.[0] as {
