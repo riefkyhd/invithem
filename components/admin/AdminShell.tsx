@@ -5,10 +5,12 @@ import { AdminNav } from "@/components/admin/AdminNav";
 
 export function AdminShell({
   projects,
+  accountEmail,
   authDisabled = false,
   children,
 }: {
   projects: Project[];
+  accountEmail?: string;
   authDisabled?: boolean;
   children: React.ReactNode;
 }) {
@@ -21,7 +23,7 @@ export function AdminShell({
           before going live.
         </div>
       ) : null}
-      <AdminNav projects={projects} />
+      <AdminNav projects={projects} accountEmail={accountEmail} />
       <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
     </>
   );

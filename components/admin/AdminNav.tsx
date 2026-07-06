@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "@/app/admin/actions";
+import { AccountMenu } from "@/components/admin/AccountMenu";
 import { ProjectSwitcher } from "@/components/admin/ProjectSwitcher";
+import { Button } from "@/components/ui/Button";
 import type { Project } from "@/lib/types/database";
 
 interface AdminNavProps {
   projects: Project[];
+  accountEmail?: string;
 }
 
 const PROJECT_NAV = [
@@ -20,12 +22,31 @@ const PROJECT_NAV = [
   { segment: "/settings/general", label: "Settings" },
 ] as const;
 
+const SETTINGS_NAV = [
+  { href: "general", label: "General" },
+  { href: "content", label: "Invitation" },
+  { href: "media", label: "Gifts & media" },
+  { href: "privacy", label: "Privacy" },
+] as const;
+
 function extractProjectId(pathname: string): string | null {
   const match = pathname.match(/^\/admin\/projects\/([^/]+)/);
   return match?.[1] ?? null;
 }
 
-export function AdminNav({ projects }: AdminNavProps) {
+function NavTabRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto max-w-6xl">
+      <div
+        className="flex gap-1 overflow-x-auto px-6 py-2 [-webkit-mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-20px),transparent)] [mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-20px),transparent)]"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function AdminNav({ projects, accountEmail }: AdminNavProps) {
   const pathname = usePathname();
   const projectId = extractProjectId(pathname);
   const currentProject = projectId
@@ -33,9 +54,11 @@ export function AdminNav({ projects }: AdminNavProps) {
     : undefined;
   const projectBase = projectId ? `/admin/projects/${projectId}` : null;
 
-  const isAppSettings = pathname.startsWith("/admin/settings");
   const isProjectsList =
     pathname === "/admin/projects" || pathname === "/admin/projects/new";
+
+  const isSettingsRoute =
+    !!projectBase && pathname.startsWith(`${projectBase}/settings`);
 
   return (
     <header className="sticky top-0 z-50 border-b border-card-border bg-background/95 backdrop-blur-md">
@@ -58,56 +81,30 @@ export function AdminNav({ projects }: AdminNavProps) {
                 }
               />
             </>
-          ) : (
-            <span className="hidden text-sm text-muted sm:inline">
-              Workspace
-            </span>
-          )}
+          ) : null}
         </div>
 
         <div className="flex items-center gap-1">
-          <Link
+          <Button
             href="/admin/projects"
-            className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-              isProjectsList
-                ? "bg-accent/15 text-accent"
-                : "text-muted hover:bg-surface hover:text-foreground"
-            }`}
+            variant="ghost"
+            size="sm"
+            active={isProjectsList}
           >
             Projects
-          </Link>
-          <Link
-            href="/admin/settings"
-            className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-              isAppSettings
-                ? "bg-accent/15 text-accent"
-                : "text-muted hover:bg-surface hover:text-foreground"
-            }`}
-          >
-            Account
-          </Link>
+          </Button>
           {!projectId && (
-            <Link
-              href="/admin/projects/new"
-              className="ml-1 rounded-full bg-accent px-3 py-1.5 text-sm text-accent-foreground transition-opacity hover:opacity-90"
-            >
+            <Button href="/admin/projects/new" variant="primary" size="sm">
               New project
-            </Link>
+            </Button>
           )}
-          <form action={signOut} className="ml-1">
-            <button
-              type="submit"
-              className="rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-            >
-              Logout
-            </button>
-          </form>
+          <AccountMenu email={accountEmail} />
         </div>
       </div>
 
       {projectBase && (
         <div className="border-t border-card-border/60">
-          <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6 py-2">
+          <NavTabRow>
             {PROJECT_NAV.map((item) => {
               const href = `${projectBase}${item.segment}`;
               const active =
@@ -115,20 +112,41 @@ export function AdminNav({ projects }: AdminNavProps) {
                   ? pathname === href
                   : pathname === href || pathname.startsWith(`${href}/`);
               return (
-                <Link
+                <Button
                   key={item.segment}
                   href={href}
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors ${
-                    active
-                      ? "bg-accent/15 font-medium text-accent"
-                      : "text-muted hover:bg-surface hover:text-foreground"
-                  }`}
+                  variant="ghost"
+                  size="sm"
+                  active={active}
                 >
                   {item.label}
-                </Link>
+                </Button>
               );
             })}
-          </div>
+          </NavTabRow>
+        </div>
+      )}
+
+      {isSettingsRoute && projectId && (
+        <div className="border-t border-card-border/40 bg-surface/30">
+          <NavTabRow>
+            {SETTINGS_NAV.map((item) => {
+              const href = `/admin/projects/${projectId}/settings/${item.href}`;
+              const active =
+                pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <Button
+                  key={item.href}
+                  href={href}
+                  variant="ghost"
+                  size="sm"
+                  active={active}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+          </NavTabRow>
         </div>
       )}
     </header>

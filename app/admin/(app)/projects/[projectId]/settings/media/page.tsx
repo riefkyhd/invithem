@@ -77,7 +77,7 @@ export default function MediaSettingsPage() {
     <form onSubmit={handleSave} className="space-y-6">
       <AdminPageHeader
         title="Gifts & media"
-        description="Digital envelopes, background music, and gallery photos."
+        description="Banks, music, and photos."
       />
 
       <FormSection title="Amplop Digital" description="Bank or e-wallet details.">

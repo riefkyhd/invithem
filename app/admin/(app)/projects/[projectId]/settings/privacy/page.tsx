@@ -22,7 +22,7 @@ export default function PrivacySettingsPage() {
     <form onSubmit={handleSave} className="space-y-6">
       <AdminPageHeader
         title="Privacy"
-        description="Control who can view this invitation."
+        description="Password protection."
       />
 
       <SettingsExtendedSections

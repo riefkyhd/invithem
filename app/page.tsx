@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export default function LandingPage() {
   return (
@@ -12,18 +12,12 @@ export default function LandingPage() {
         designs from one place.
       </p>
       <div className="mt-10 flex flex-wrap justify-center gap-4">
-        <Link
-          href="/admin/login"
-          className="rounded-full bg-accent px-8 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
-        >
+        <Button href="/admin/login" variant="primary" size="lg">
           Sign in
-        </Link>
-        <Link
-          href="/admin/projects"
-          className="rounded-full border border-card-border px-8 py-3 text-sm transition-colors hover:border-accent"
-        >
+        </Button>
+        <Button href="/admin/projects" variant="secondary" size="lg">
           Dashboard
-        </Link>
+        </Button>
       </div>
     </div>
   );

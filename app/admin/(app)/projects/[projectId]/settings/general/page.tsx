@@ -66,7 +66,7 @@ export default function GeneralProjectSettingsPage() {
     <div>
       <AdminPageHeader
         title="General"
-        description="Project identity and publish status — like repository settings in GitHub."
+        description="Name, URL, and publish status."
       />
 
       <form onSubmit={handleSave} className="space-y-6">

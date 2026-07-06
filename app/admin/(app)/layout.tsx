@@ -1,5 +1,5 @@
 import { Fraunces, Inter } from "next/font/google";
-import { listProjects } from "@/app/admin/actions";
+import { getAccountProfile, listProjects } from "@/app/admin/actions";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isAuthDisabled } from "@/lib/auth/disabled";
 
@@ -23,12 +23,17 @@ export default async function AuthenticatedAdminLayout({
   children: React.ReactNode;
 }) {
   const projects = await listProjects();
+  const profile = await getAccountProfile();
 
   return (
     <div
       className={`${fraunces.variable} ${inter.variable} min-h-screen bg-background`}
     >
-      <AdminShell projects={projects} authDisabled={isAuthDisabled()}>
+      <AdminShell
+        projects={projects}
+        accountEmail={profile?.email}
+        authDisabled={isAuthDisabled()}
+      >
         {children}
       </AdminShell>
     </div>

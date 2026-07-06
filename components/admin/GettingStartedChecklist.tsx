@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   getGettingStartedProgress,
   updateProjectStatus,
@@ -81,12 +80,14 @@ export async function GettingStartedChecklist({
                 {done ? "✓" : ""}
               </span>
               {item.href && !done ? (
-                <Link
+                <Button
                   href={item.href(projectId)}
-                  className="text-sm text-accent hover:underline"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-0 py-0 font-normal hover:bg-transparent"
                 >
                   {item.label}
-                </Link>
+                </Button>
               ) : (
                 <span
                   className={`text-sm ${done ? "text-muted line-through" : "text-foreground"}`}

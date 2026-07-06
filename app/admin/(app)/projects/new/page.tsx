@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createProject } from "@/app/admin/actions";
@@ -81,12 +80,9 @@ export default function NewProjectPage() {
             <Button type="submit" disabled={loading}>
               {loading ? "Creating…" : "Create project"}
             </Button>
-            <Link
-              href="/admin/projects"
-              className="inline-flex items-center rounded-full border border-card-border px-6 py-3 text-sm transition-colors hover:border-accent"
-            >
+            <Button href="/admin/projects" variant="secondary">
               Cancel
-            </Link>
+            </Button>
           </div>
         </form>
       </FormSection>

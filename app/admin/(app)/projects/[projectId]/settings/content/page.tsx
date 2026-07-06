@@ -47,7 +47,7 @@ export default function ContentSettingsPage() {
     <form onSubmit={handleSave} className="space-y-6">
       <AdminPageHeader
         title="Invitation content"
-        description="Couple details, events, and story shown on the guest site."
+        description="Couple, events, and story."
       />
 
       <FormSection title="The Couple" description="Names and wedding date on the cover.">

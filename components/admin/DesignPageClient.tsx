@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useTransition } from "react";
 import { updateTemplateId } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { Button } from "@/components/ui/Button";
 import type { TemplateId } from "@/lib/types/database";
 import { getAllTemplateMeta } from "@/templates/registry";
 
@@ -60,21 +60,23 @@ export function DesignPageClient({
                   <p className="mt-1 text-sm text-muted">{template.description}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link
+                  <Button
                     href={`/preview/${template.id}?project=${encodeURIComponent(projectSlug)}`}
                     target="_blank"
-                    className="rounded-full border border-card-border px-4 py-2 text-sm transition-colors hover:border-accent"
+                    variant="secondary"
+                    size="sm"
                   >
                     Preview
-                  </Link>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     disabled={isActive || isPending}
                     onClick={() => handleSelect(template.id)}
-                    className="rounded-full bg-accent px-4 py-2 text-sm text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                    variant="primary"
+                    size="sm"
                   >
                     {isActive ? "Active" : "Use this design"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

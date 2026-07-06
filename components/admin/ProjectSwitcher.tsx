@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import type { Project } from "@/lib/types/database";
 
 interface ProjectSwitcherProps {
@@ -81,21 +82,25 @@ export function ProjectSwitcher({
               );
             })}
           </div>
-          <div className="border-t border-card-border">
-            <Link
+          <div className="space-y-1 border-t border-card-border p-1">
+            <Button
               href="/admin/projects"
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start rounded-lg"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
             >
               All projects
-            </Link>
-            <Link
+            </Button>
+            <Button
               href="/admin/projects/new"
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start rounded-lg text-accent"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 text-sm text-accent transition-colors hover:bg-surface"
             >
               + New project
-            </Link>
+            </Button>
           </div>
         </div>
       )}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listProjects } from "@/app/admin/actions";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { DuplicateProjectButton } from "@/components/admin/DuplicateProjectButton";
+import { Button } from "@/components/ui/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -16,23 +17,17 @@ export default async function ProjectsListPage() {
       />
 
       <div className="mb-8">
-        <Link
-          href="/admin/projects/new"
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm text-accent-foreground transition-opacity hover:opacity-90"
-        >
+        <Button href="/admin/projects/new" variant="primary">
           + Create new project
-        </Link>
+        </Button>
       </div>
 
       {projects.length === 0 ? (
         <div className="rounded-2xl border border-card-border bg-card px-6 py-16 text-center">
           <p className="text-muted">No projects yet.</p>
-          <Link
-            href="/admin/projects/new"
-            className="mt-4 inline-block text-sm text-accent hover:underline"
-          >
-            Create your first invitation
-          </Link>
+            <Button href="/admin/projects/new" variant="ghost" size="sm" className="mt-4">
+              Create your first invitation
+            </Button>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
