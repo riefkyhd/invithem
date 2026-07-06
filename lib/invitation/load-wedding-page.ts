@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { isAuthDisabled } from "@/lib/auth/disabled";
 import { mergeSettings } from "@/lib/content/placeholders";
 import { buildWeddingData } from "@/lib/invitation/build-wedding-data";
 import { resolveEventMapsUrls } from "@/lib/invitation/resolve-event-maps";
@@ -36,9 +37,11 @@ export const loadWeddingPageData = cache(
     const merged = mergeSettings(sources.settings);
     const requiresPassword = merged.is_password_protected;
 
+    const bypassGate = options?.bypassPasswordGate || isAuthDisabled();
+
     if (
       requiresPassword &&
-      !options?.bypassPasswordGate &&
+      !bypassGate &&
       !(await hasProjectAccessCookie(sources.project.id))
     ) {
       return {

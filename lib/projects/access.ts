@@ -1,6 +1,28 @@
+import type { User } from "@supabase/supabase-js";
+import { isAuthDisabled } from "@/lib/auth/disabled";
+import { createAccessClient } from "@/lib/supabase/access-client";
 import { createClient } from "@/lib/supabase/server";
 
-export async function getAuthenticatedUser() {
+const AUTH_DISABLED_STUB: User = {
+  id: "00000000-0000-0000-0000-000000000001",
+  aud: "authenticated",
+  role: "authenticated",
+  email: "auth-disabled@invithem.local",
+  email_confirmed_at: new Date().toISOString(),
+  phone: "",
+  confirmed_at: new Date().toISOString(),
+  last_sign_in_at: new Date().toISOString(),
+  app_metadata: {},
+  user_metadata: {},
+  identities: [],
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  is_anonymous: false,
+};
+
+export async function getAuthenticatedUser(): Promise<User> {
+  if (isAuthDisabled()) return AUTH_DISABLED_STUB;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -10,6 +32,17 @@ export async function getAuthenticatedUser() {
 }
 
 export async function assertProjectAccess(projectId: string) {
+  if (isAuthDisabled()) {
+    const supabase = await createAccessClient();
+    const { data: project } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("id", projectId)
+      .single();
+    if (!project) throw new Error("Project not found");
+    return AUTH_DISABLED_STUB;
+  }
+
   const user = await getAuthenticatedUser();
   const supabase = await createClient();
   const { data: project } = await supabase
@@ -34,6 +67,15 @@ export async function assertProjectAccess(projectId: string) {
 }
 
 export async function getUserProjects() {
+  if (isAuthDisabled()) {
+    const supabase = await createAccessClient();
+    const { data } = await supabase
+      .from("projects")
+      .select("*")
+      .order("updated_at", { ascending: false });
+    return data ?? [];
+  }
+
   await getAuthenticatedUser();
   const supabase = await createClient();
   const { data } = await supabase

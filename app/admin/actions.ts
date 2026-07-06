@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isAuthDisabled } from "@/lib/auth/disabled";
 import { mergeSettings } from "@/lib/content/placeholders";
 import { pickUpdatableSettings } from "@/lib/admin/settings-allowlist";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/lib/projects/access";
 import { projectStoragePath } from "@/lib/projects/urls";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createAccessClient } from "@/lib/supabase/access-client";
 import { createClient } from "@/lib/supabase/server";
 import type {
   AdminSettings,
@@ -50,6 +52,9 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
+  if (isAuthDisabled()) {
+    redirect("/admin/projects");
+  }
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/admin/login");
@@ -86,7 +91,7 @@ export async function updateProject(
     updates.slug = slug;
   }
 
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: project, error } = await supabase
     .from("projects")
     .update(updates)
@@ -103,7 +108,7 @@ export async function updateProject(
 
 export async function getProject(projectId: string): Promise<Project | null> {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data } = await supabase
     .from("projects")
     .select("*")
@@ -117,7 +122,7 @@ export async function createProject(name: string, slugInput: string) {
   const slug = slugify(slugInput || name);
   if (!slug) return { error: "Invalid slug" };
 
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: project, error } = await supabase
     .from("projects")
     .insert({
@@ -154,7 +159,7 @@ export async function duplicateProject(sourceProjectId: string, name: string, sl
   if (!slug) return { error: "Invalid slug" };
 
   const user = await getAuthenticatedUser();
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
 
   const { data: sourceSettings } = await supabase
     .from("admin_settings")
@@ -201,7 +206,7 @@ export async function updateProjectStatus(
   status: "draft" | "published" | "archived"
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: project } = await supabase
     .from("projects")
     .update({ status, updated_at: new Date().toISOString() })
@@ -216,7 +221,7 @@ export async function updateProjectStatus(
 
 export async function getGuests(projectId: string): Promise<Guest[]> {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: guests } = await supabase
     .from("guests")
     .select("*")
@@ -246,7 +251,7 @@ export async function getGuests(projectId: string): Promise<Guest[]> {
 
 export async function getEvents(projectId: string): Promise<WeddingEvent[]> {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data } = await supabase
     .from("events")
     .select("*")
@@ -260,7 +265,7 @@ export async function upsertEvents(
   events: Omit<WeddingEvent, "created_at" | "project_id">[]
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
 
   const { data: existing } = await supabase
     .from("events")
@@ -298,7 +303,7 @@ export async function upsertEvents(
 }
 
 async function setGuestEvents(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: Awaited<ReturnType<typeof createAccessClient>>,
   guestId: string,
   eventIds: string[]
 ) {
@@ -318,7 +323,7 @@ export async function addGuest(
   eventIds: string[] = []
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const slug = await generateGuestSlug(supabase, projectId, name);
   const { data: guest, error } = await supabase
     .from("guests")
@@ -364,7 +369,7 @@ export async function updateGuest(
   }
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { eventIds, ...guestData } = data;
   const { error } = await supabase
     .from("guests")
@@ -379,7 +384,7 @@ export async function updateGuest(
 
 export async function deleteGuest(projectId: string, id: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { error } = await supabase
     .from("guests")
     .delete()
@@ -395,7 +400,7 @@ export async function importGuestsCsv(
   rows: { name: string; category: string; whatsapp_number?: string }[]
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const validCategories = ["family", "friends", "VIP", "colleagues"];
   const reserved = new Set<string>();
   const inserts = [];
@@ -444,7 +449,7 @@ export async function importGuestsCsv(
 
 export async function getRsvps(projectId: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data } = await supabase
     .from("rsvps")
     .select("*")
@@ -455,7 +460,7 @@ export async function getRsvps(projectId: string) {
 
 export async function getWishes(projectId: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data } = await supabase
     .from("wishes")
     .select("*")
@@ -466,7 +471,7 @@ export async function getWishes(projectId: string) {
 
 export async function hideWish(projectId: string, id: string, hidden: boolean) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { error } = await supabase
     .from("wishes")
     .update({ is_hidden: hidden })
@@ -479,7 +484,7 @@ export async function hideWish(projectId: string, id: string, hidden: boolean) {
 
 export async function deleteWish(projectId: string, id: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { error } = await supabase
     .from("wishes")
     .delete()
@@ -492,7 +497,7 @@ export async function deleteWish(projectId: string, id: string) {
 
 export async function getSettings(projectId: string): Promise<AdminSettings | null> {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data } = await supabase
     .from("admin_settings")
     .select("*")
@@ -506,7 +511,7 @@ export async function updateSettings(
   settings: Partial<AdminSettings>
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: project } = await supabase
     .from("projects")
     .select("slug")
@@ -531,7 +536,7 @@ export async function updateTemplateId(projectId: string, templateId: string) {
   await assertProjectAccess(projectId);
   if (!isValidTemplateId(templateId)) return { error: "Invalid template" };
 
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data: project } = await supabase
     .from("projects")
     .select("slug")
@@ -571,7 +576,7 @@ export async function uploadFile(
 
 export async function getStats(projectId: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
 
   const [guests, rsvps, views] = await Promise.all([
     supabase
@@ -645,7 +650,7 @@ export async function setProjectPassword(
   enabled: boolean
 ) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const hash = password ? await bcrypt.hash(password, 10) : null;
   const { error } = await supabase
     .from("admin_settings")
@@ -662,7 +667,7 @@ export async function setProjectPassword(
 
 export async function checkInGuest(projectId: string, token: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data, error } = await supabase.rpc("check_in_guest", {
     p_token: token,
     p_project_id: projectId,
@@ -685,7 +690,7 @@ export async function checkInGuest(projectId: string, token: string) {
 
 export async function getCheckinStats(projectId: string) {
   await assertProjectAccess(projectId);
-  const supabase = await createClient();
+  const supabase = await createAccessClient();
   const { data, error } = await supabase.rpc("get_checkin_stats", {
     p_project_id: projectId,
   });

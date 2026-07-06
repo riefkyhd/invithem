@@ -1,6 +1,7 @@
 import { Fraunces, Inter } from "next/font/google";
 import { listProjects } from "@/app/admin/actions";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { isAuthDisabled } from "@/lib/auth/disabled";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -27,7 +28,9 @@ export default async function AuthenticatedAdminLayout({
     <div
       className={`${fraunces.variable} ${inter.variable} min-h-screen bg-background`}
     >
-      <AdminShell projects={projects}>{children}</AdminShell>
+      <AdminShell projects={projects} authDisabled={isAuthDisabled()}>
+        {children}
+      </AdminShell>
     </div>
   );
 }

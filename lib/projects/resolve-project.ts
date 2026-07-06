@@ -1,4 +1,6 @@
 import { cache } from "react";
+import { isAuthDisabled } from "@/lib/auth/disabled";
+import { createAccessClient } from "@/lib/supabase/access-client";
 import { createClient } from "@/lib/supabase/server";
 import type {
   AdminSettings,
@@ -39,7 +41,9 @@ export const fetchWeddingPageSources = cache(
     projectSlug: string,
     guestSlug?: string
   ): Promise<WeddingPageSources | null> => {
-    const supabase = await createClient();
+    const supabase = isAuthDisabled()
+      ? await createAccessClient()
+      : await createClient();
 
     const [projectRes, settingsRes, wishesRes, eventsRes, guestRes] =
       await Promise.all([
@@ -62,7 +66,9 @@ export const fetchWeddingPageSources = cache(
       ]);
 
     const project = projectRes.data?.[0] as Project | undefined;
-    if (!project || project.status !== "published") return null;
+    if (!project) return null;
+    if (!isAuthDisabled() && project.status !== "published") return null;
+    if (isAuthDisabled() && project.status === "archived") return null;
 
     const settingsRow = settingsRes.data?.[0] as AdminSettings | undefined;
     const settings = settingsRow

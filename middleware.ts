@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthDisabled } from "@/lib/auth/disabled";
 
 function handleLegacyRedirects(request: NextRequest): NextResponse | null {
   const pathname = request.nextUrl.pathname;
@@ -65,6 +66,15 @@ export async function middleware(request: NextRequest) {
 
   const legacyAdmin = handleLegacyAdminRedirects(request);
   if (legacyAdmin) return legacyAdmin;
+
+  if (isAuthDisabled()) {
+    if (pathname === "/admin/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/projects";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
 
   let supabaseResponse = NextResponse.next({ request });
 
