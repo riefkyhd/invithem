@@ -71,7 +71,9 @@ export type TemplateId =
   | "botanical-editorial"
   | "maximalist-bold"
   | "architectural-modern"
-  | "romantic-heirloom";
+  | "romantic-heirloom"
+  | "whimsical-pastel"
+  | "monochrome-noir";
 
 export interface AdminSettings {
   project_id: string;

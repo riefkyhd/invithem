@@ -9,6 +9,8 @@ export const TEMPLATE_IDS = [
   "maximalist-bold",
   "architectural-modern",
   "romantic-heirloom",
+  "whimsical-pastel",
+  "monochrome-noir",
 ] as const satisfies readonly TemplateId[];
 
 const TEMPLATE_META: Record<TemplateId, Omit<TemplateMeta, "id">> = {
@@ -47,6 +49,16 @@ const TEMPLATE_META: Record<TemplateId, Omit<TemplateMeta, "id">> = {
     description: "Timeless keepsake — dusty rose, monogram anchor, classic serif warmth.",
     thumbnail: "/template-previews/romantic-heirloom.svg",
   },
+  "whimsical-pastel": {
+    name: "Whimsical Pastel",
+    description: "Soft sage and blush garden romance — arched portraits, rounded cards, playful elegance.",
+    thumbnail: "/template-previews/whimsical-pastel.svg",
+  },
+  "monochrome-noir": {
+    name: "Monochrome Noir",
+    description: "High-contrast B&W editorial — Bodoni display, inverted ceremony block, gallery-poster drama.",
+    thumbnail: "/template-previews/monochrome-noir.svg",
+  },
 };
 
 export function getAllTemplateMeta(): TemplateMeta[] {
@@ -81,6 +93,10 @@ export async function loadTemplate(id: TemplateId): Promise<TemplateModule> {
       return (await import("./architectural-modern")).default;
     case "romantic-heirloom":
       return (await import("./romantic-heirloom")).default;
+    case "whimsical-pastel":
+      return (await import("./whimsical-pastel")).default;
+    case "monochrome-noir":
+      return (await import("./monochrome-noir")).default;
     default:
       return (await import("./reference")).default;
   }

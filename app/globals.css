@@ -76,6 +76,12 @@ body {
 .tmpl-img-reference {
   filter: saturate(0.95) contrast(1.02);
 }
+.tmpl-img-whimsical {
+  filter: saturate(0.92) contrast(0.98) brightness(1.04);
+}
+.tmpl-img-noir {
+  filter: grayscale(100%) contrast(1.12) brightness(0.98);
+}
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;

@@ -1,0 +1,31 @@
+[data-template="whimsical-pastel"] {
+  --tmpl-bg: #fbf9f5;
+  --tmpl-fg: #1b1c1a;
+  --tmpl-muted: #434842;
+  --tmpl-heading: #4f644e;
+  --tmpl-accent: #4f644e;
+  --tmpl-accent-fg: #ffffff;
+  --tmpl-accent-secondary: #7b5455;
+  --tmpl-sage: #8da38a;
+  --tmpl-blush: #fdcbcb;
+  --tmpl-card: #f5f3ef;
+  --tmpl-card-border: rgba(79, 100, 78, 0.12);
+  --tmpl-surface: #ffffff;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="whimsical-pastel"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="whimsical-pastel"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="whimsical-pastel"] .wp-card {
+  border-radius: 2rem;
+  border: 1px solid rgba(79, 100, 78, 0.05);
+  background-color: var(--tmpl-card);
+  box-shadow: 0 10px 40px -10px rgba(79, 100, 78, 0.08);
+}

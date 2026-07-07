@@ -1,0 +1,32 @@
+[data-template="monochrome-noir"] {
+  --tmpl-bg: #f9f9f9;
+  --tmpl-fg: #1a1c1c;
+  --tmpl-muted: #5d5f5f;
+  --tmpl-heading: #1a1c1c;
+  --tmpl-accent: #000000;
+  --tmpl-accent-fg: #ffffff;
+  --tmpl-card: #f3f3f3;
+  --tmpl-card-border: rgba(0, 0, 0, 0.05);
+  --tmpl-surface: #ffffff;
+  --tmpl-inverse: #000000;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="monochrome-noir"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="monochrome-noir"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="monochrome-noir"] .mn-inverse {
+  background-color: var(--tmpl-inverse);
+  color: #ffffff;
+}
+
+[data-template="monochrome-noir"] .mn-card {
+  border: 1px solid var(--tmpl-card-border);
+  background-color: var(--tmpl-card);
+}

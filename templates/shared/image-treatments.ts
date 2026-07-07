@@ -8,6 +8,8 @@ export const IMAGE_TREATMENTS: Record<TemplateId, string> = {
   "maximalist-bold": "tmpl-img-maximalist",
   "architectural-modern": "tmpl-img-architectural",
   "romantic-heirloom": "tmpl-img-heirloom",
+  "whimsical-pastel": "tmpl-img-whimsical",
+  "monochrome-noir": "tmpl-img-noir",
 };
 
 export function getImageTreatmentClass(templateId: TemplateId): string {
