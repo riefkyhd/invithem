@@ -62,8 +62,9 @@ export function Gallery({ data }: GalleryProps) {
       {lightboxIndex !== null && (
         <Lightbox
           images={lightboxImages}
-          initialIndex={lightboxIndex}
+          index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
+          onNavigate={setLightboxIndex}
         />
       )}
     </section>
