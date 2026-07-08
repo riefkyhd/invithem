@@ -5,7 +5,7 @@ import type { AdminSettings } from "@/lib/types/database";
 describe("mergeSettings", () => {
   it("returns full defaults when settings is null", () => {
     const merged = mergeSettings(null);
-    expect(merged.template_id).toBe("reference");
+    expect(merged.template_id).toBe("silent-heritage");
     expect(merged.groom_name).toContain("FILL IN");
     expect(merged.story_milestones.length).toBeGreaterThan(0);
     expect(merged.bank_accounts.length).toBeGreaterThan(0);

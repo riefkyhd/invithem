@@ -45,7 +45,7 @@ export const loadWeddingPageData = cache(
       !(await hasProjectAccessCookie(sources.project.id))
     ) {
       return {
-        templateId: "reference",
+        templateId: "silent-heritage",
         weddingData: null,
         requiresPassword: true,
         hasAccess: false,
@@ -59,7 +59,7 @@ export const loadWeddingPageData = cache(
 
     const templateId: TemplateId = isValidTemplateId(merged.template_id)
       ? merged.template_id
-      : "reference";
+      : "silent-heritage";
 
     const resolvedMapsUrls = await resolveEventMapsUrls(sources.events);
 

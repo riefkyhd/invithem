@@ -138,7 +138,7 @@ export async function createProject(name: string, slugInput: string) {
 
   const { error: settingsError } = await supabase.from("admin_settings").insert({
     project_id: project.id,
-    template_id: "reference",
+    template_id: "silent-heritage",
   });
 
   if (settingsError) return { error: settingsError.message };

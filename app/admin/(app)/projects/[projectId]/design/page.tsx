@@ -14,7 +14,7 @@ export default async function DesignPage({
     getProject(projectId),
   ]);
   const merged = mergeSettings(settings);
-  const currentTemplateId: TemplateId = merged.template_id ?? "reference";
+  const currentTemplateId: TemplateId = merged.template_id ?? "silent-heritage";
 
   return (
     <DesignPageClient

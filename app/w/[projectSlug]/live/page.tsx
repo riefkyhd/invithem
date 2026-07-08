@@ -26,7 +26,7 @@ export default async function LivePage({
   const merged = mergeSettings(settings);
   const templateId: TemplateId = isValidTemplateId(merged.template_id)
     ? merged.template_id
-    : "reference";
+    : "silent-heritage";
 
   const template = await loadTemplate(templateId);
 

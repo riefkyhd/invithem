@@ -73,7 +73,8 @@ export type TemplateId =
   | "architectural-modern"
   | "romantic-heirloom"
   | "whimsical-pastel"
-  | "monochrome-noir";
+  | "monochrome-noir"
+  | "silent-heritage";
 
 export interface AdminSettings {
   project_id: string;

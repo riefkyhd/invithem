@@ -10,6 +10,7 @@ export const IMAGE_TREATMENTS: Record<TemplateId, string> = {
   "romantic-heirloom": "tmpl-img-heirloom",
   "whimsical-pastel": "tmpl-img-whimsical",
   "monochrome-noir": "tmpl-img-noir",
+  "silent-heritage": "tmpl-img-heritage",
 };
 
 export function getImageTreatmentClass(templateId: TemplateId): string {

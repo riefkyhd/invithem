@@ -1,0 +1,43 @@
+[data-template="silent-heritage"] {
+  --tmpl-bg: #f6f2ea;
+  --tmpl-fg: #2a2622;
+  --tmpl-muted: #6d6560;
+  --tmpl-heading: #2a2622;
+  --tmpl-accent: #b8956a;
+  --tmpl-accent-fg: #f6f2ea;
+  --tmpl-card: #fffdf8;
+  --tmpl-card-border: rgba(184, 149, 106, 0.22);
+  --tmpl-surface: #f0ebe3;
+  --tmpl-inverse: #2a2622;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="silent-heritage"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="silent-heritage"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="silent-heritage"] .sh-gold-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--tmpl-accent) 15%,
+    var(--tmpl-accent) 85%,
+    transparent
+  );
+}
+
+[data-template="silent-heritage"] .sh-card {
+  border: 1px solid var(--tmpl-card-border);
+  background-color: var(--tmpl-card);
+}
+
+[data-template="silent-heritage"] .sh-parent-card {
+  border-left: 2px solid var(--tmpl-accent);
+  background-color: var(--tmpl-surface);
+}
