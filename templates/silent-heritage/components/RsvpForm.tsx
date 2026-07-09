@@ -97,9 +97,12 @@ function EventRsvpForm({
             <legend className="mb-3 text-[10px] uppercase tracking-[0.25em] text-[var(--tmpl-muted)]">
               {t("rsvpAttending")}
             </legend>
-            <div className="flex gap-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-8">
               {(["yes", "no"] as const).map((value) => (
-                <label key={value} className="flex cursor-pointer items-center gap-2 text-sm">
+                <label
+                  key={value}
+                  className="flex cursor-pointer items-center gap-2 text-sm text-[var(--tmpl-fg)]"
+                >
                   <input
                     type="radio"
                     value={value}
@@ -137,7 +140,7 @@ function EventRsvpForm({
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <div className="flex justify-center pt-4">
-            <ShPrimaryButton type="submit" disabled={isSubmitting}>
+            <ShPrimaryButton type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
               {t("rsvpSubmit")}
             </ShPrimaryButton>
           </div>

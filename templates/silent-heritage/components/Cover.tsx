@@ -39,7 +39,7 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
     <AnimatePresence>
       {!opened && (
         <motion.div
-          className="fixed inset-0 z-50 flex min-h-screen cursor-pointer flex-col bg-[var(--tmpl-bg)]"
+          className="fixed inset-0 z-50 flex min-h-screen cursor-pointer flex-col overflow-y-auto overscroll-y-contain bg-[var(--tmpl-bg)]"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={motionConfig.coverExit.transition}
@@ -49,25 +49,27 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
           tabIndex={0}
           aria-label={t("tapToOpen")}
         >
-          <div className="relative min-h-[58vh] w-full shrink-0">
+          <div className="relative h-[min(58vh,28rem)] w-full shrink-0 overflow-hidden">
             <CoverHeroImage
               src={heroImage}
               alt={`${data.couple.groomName} & ${data.couple.brideName}`}
+              blendToTemplate={false}
+              imageClassName="object-[center_30%]"
             >
-              <div className="absolute inset-0 flex flex-col justify-end px-6 pb-16 pt-24 text-white">
-                <p className="tmpl-body text-[10px] font-medium uppercase tracking-[0.3em] text-white/80">
+              <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-6 pb-8 pt-20">
+                <p className="tmpl-body text-[10px] font-medium uppercase tracking-[0.3em] text-white/90">
                   {t("weddingOf")}
                 </p>
-                <h1 className="tmpl-display mt-3 text-5xl font-light leading-none tracking-wide">
+                <h1 className="tmpl-display mt-3 max-w-[18rem] text-[clamp(1.75rem,8vw,3rem)] font-light leading-tight tracking-wide text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
                   {data.couple.groomName.split(" ")[0]} &{" "}
                   {data.couple.brideName.split(" ")[0]}
                 </h1>
 
-                <div className="mt-8 flex items-start gap-6">
-                  <div className="tmpl-display text-4xl font-light leading-none">
+                <div className="mt-6 flex items-end gap-5">
+                  <div className="tmpl-display text-4xl font-light leading-none text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)]">
                     {day}
                   </div>
-                  <div className="tmpl-body space-y-1 text-sm uppercase tracking-[0.2em] text-white/85">
+                  <div className="tmpl-body space-y-0.5 pb-1 text-sm uppercase tracking-[0.2em] text-white/90">
                     <p>{month}</p>
                     <p>{year}</p>
                   </div>
@@ -76,14 +78,16 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
             </CoverHeroImage>
           </div>
 
-          <div className="flex flex-1 flex-col px-6 py-10">
+          <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-6 py-10">
             {guestName && (
               <div className="space-y-2">
                 <p className="tmpl-body text-sm text-[var(--tmpl-muted)]">{t("dear")}</p>
-                <p className="tmpl-display text-3xl text-[var(--tmpl-heading)]">{guestName}</p>
+                <p className="tmpl-display break-words text-3xl text-[var(--tmpl-heading)]">
+                  {guestName}
+                </p>
               </div>
             )}
-            <p className="tmpl-body mt-6 max-w-sm text-base leading-relaxed text-[var(--tmpl-muted)]">
+            <p className="tmpl-body mt-6 text-base leading-relaxed text-[var(--tmpl-muted)]">
               {inviteLine}
             </p>
             <ShPrimaryButton
@@ -92,14 +96,14 @@ export function Cover({ data, opened, onOpen }: CoverProps) {
                 e.stopPropagation();
                 handleOpen();
               }}
-              className="mt-8 w-fit"
+              className="mt-8 w-full sm:w-fit"
             >
               {t("openInvitation")}
             </ShPrimaryButton>
           </div>
 
           <div className="flex justify-center pb-8" aria-hidden>
-            <div className="h-16 w-px bg-[var(--tmpl-accent)]/40" />
+            <div className="h-12 w-px bg-[var(--tmpl-accent)]/50" />
           </div>
         </motion.div>
       )}

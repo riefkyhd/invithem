@@ -1,10 +1,10 @@
 [data-template="silent-heritage"] {
   --tmpl-bg: #f6f2ea;
   --tmpl-fg: #2a2622;
-  --tmpl-muted: #6d6560;
+  --tmpl-muted: #5c554f;
   --tmpl-heading: #2a2622;
-  --tmpl-accent: #b8956a;
-  --tmpl-accent-fg: #f6f2ea;
+  --tmpl-accent: #9a7b4f;
+  --tmpl-accent-fg: #2a2622;
   --tmpl-card: #fffdf8;
   --tmpl-card-border: rgba(184, 149, 106, 0.22);
   --tmpl-surface: #f0ebe3;

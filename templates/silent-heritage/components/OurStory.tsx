@@ -58,7 +58,9 @@ function CoupleBlock({
         <div className="pointer-events-none absolute inset-4 border border-white/50" />
       </div>
       <div className={`mt-6 ${alignRight ? "text-right" : "text-left"}`}>
-        <h3 className="tmpl-display text-4xl text-[var(--tmpl-heading)]">{name}</h3>
+        <h3 className="tmpl-display break-words text-[clamp(1.75rem,7vw,2.5rem)] text-[var(--tmpl-heading)]">
+          {name}
+        </h3>
         {parents && (
           <p className="tmpl-body mt-3 text-sm leading-relaxed text-[var(--tmpl-muted)]">
             {parents}
@@ -114,7 +116,7 @@ export function OurStory({ data }: OurStoryProps) {
           />
         </TemplateSectionReveal>
 
-        <p className="tmpl-display text-center text-6xl font-light italic text-[var(--tmpl-accent)]/50">
+        <p className="tmpl-display text-center text-6xl font-light italic text-[var(--tmpl-accent)]">
           &
         </p>
 

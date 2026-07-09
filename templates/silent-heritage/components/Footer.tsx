@@ -30,7 +30,7 @@ export function Footer({ data }: FooterProps) {
           {data.couple.monogram}
         </p>
 
-        <h2 className="tmpl-display mt-8 text-4xl font-light leading-tight">
+        <h2 className="tmpl-display mt-8 break-words text-4xl font-light leading-tight text-white">
           {data.couple.groomName.split(" ")[0]}
           <span className="mx-3 italic text-[var(--tmpl-accent)]">&</span>
           {data.couple.brideName.split(" ")[0]}
@@ -44,12 +44,7 @@ export function Footer({ data }: FooterProps) {
 
         <div className="sh-gold-rule mx-auto my-10 w-32 opacity-60" />
 
-        <ShPrimaryButton
-          type="button"
-          onClick={handleShare}
-          variant="outline"
-          className="border-white/30 text-white hover:opacity-90"
-        >
+        <ShPrimaryButton type="button" onClick={handleShare} variant="inverse">
           {t("share")}
         </ShPrimaryButton>
 

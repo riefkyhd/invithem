@@ -10,6 +10,8 @@ interface CoverHeroImageProps {
   imageClassName?: string;
   priority?: boolean;
   sizes?: string;
+  /** When false, keeps a dark scrim instead of fading into the template background. */
+  blendToTemplate?: boolean;
 }
 
 /** Full-bleed hero image with scrims so overlay text stays readable on any photo. */
@@ -20,6 +22,7 @@ export function CoverHeroImage({
   imageClassName = "",
   priority = true,
   sizes = "100vw",
+  blendToTemplate = true,
 }: CoverHeroImageProps) {
   return (
     <div className="relative h-full w-full">
@@ -35,10 +38,17 @@ export function CoverHeroImage({
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/15"
         aria-hidden
       />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--tmpl-bg)] from-0% via-[var(--tmpl-bg)]/70 via-40% to-transparent"
-        aria-hidden
-      />
+      {blendToTemplate ? (
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--tmpl-bg)] from-0% via-[var(--tmpl-bg)]/70 via-40% to-transparent"
+          aria-hidden
+        />
+      ) : (
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35"
+          aria-hidden
+        />
+      )}
       {children}
     </div>
   );

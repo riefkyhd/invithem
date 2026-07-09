@@ -49,11 +49,14 @@ export function GiftEnvelope({ data }: GiftEnvelopeProps) {
               <p className="tmpl-body mt-2 text-sm text-[var(--tmpl-muted)]">
                 {account.account_name}
               </p>
-              <div className="mt-4 flex items-center justify-between gap-4 border border-[var(--tmpl-card-border)] bg-[var(--tmpl-bg)] px-4 py-3">
-                <p className="tmpl-body text-sm tracking-widest text-[var(--tmpl-fg)]">
+              <div className="mt-4 flex flex-col gap-3 border border-[var(--tmpl-card-border)] bg-[var(--tmpl-bg)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="tmpl-body break-all text-sm tracking-widest text-[var(--tmpl-fg)]">
                   {account.account_number}
                 </p>
-                <CopyButton value={account.account_number} />
+                <CopyButton
+                  value={account.account_number}
+                  className="shrink-0 self-start border-[var(--tmpl-card-border)] text-[var(--tmpl-fg)] hover:border-[var(--tmpl-accent)] hover:text-[var(--tmpl-accent)] sm:self-center"
+                />
               </div>
             </div>
           ))}

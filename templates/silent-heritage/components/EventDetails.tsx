@@ -38,14 +38,14 @@ function EventCard({ event, locale }: { event: WeddingEventData; locale: "id" | 
         </span>
         <div className="tmpl-body text-sm leading-relaxed text-[var(--tmpl-muted)]">
           <p className="font-medium text-[var(--tmpl-fg)]">{event.venueName}</p>
-          <p className="mt-1">{event.venueAddress}</p>
+          <p className="mt-1 break-words">{event.venueAddress}</p>
         </div>
       </div>
       <ShPrimaryButton
         type="button"
         variant="outline"
         onClick={openMaps}
-        className="mt-8"
+        className="mt-8 w-full sm:w-auto"
       >
         {t("viewOnMaps")}
       </ShPrimaryButton>
@@ -66,14 +66,14 @@ export function EventDetails({ data }: EventDetailsProps) {
   return (
     <section id="events" className="px-6 py-24 md:px-8">
       <TemplateSectionReveal motion={motion} className="mx-auto max-w-lg">
-        <div className="flex items-end justify-between gap-6 border-b border-[var(--tmpl-card-border)] pb-8">
-          <div>
+        <div className="flex flex-col gap-4 border-b border-[var(--tmpl-card-border)] pb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
             <ShEyebrow>{locale === "id" ? "Agenda Acara" : "The Ceremonies"}</ShEyebrow>
             <ShSectionTitle className="mt-3">
               {locale === "id" ? "Detail Acara" : "Event Details"}
             </ShSectionTitle>
           </div>
-          <p className="tmpl-body text-[10px] uppercase tracking-[0.25em] text-[var(--tmpl-muted)]">
+          <p className="tmpl-body shrink-0 text-[10px] uppercase tracking-[0.25em] text-[var(--tmpl-muted)]">
             {headerDate}
           </p>
         </div>

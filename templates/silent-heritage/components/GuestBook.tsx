@@ -60,7 +60,7 @@ export function GuestBook({ data }: GuestBookProps) {
           {submitted && (
             <p className="text-sm text-[var(--tmpl-muted)]">{t("wishSuccess")}</p>
           )}
-          <ShPrimaryButton type="submit" disabled={isSubmitting} className="w-full">
+          <ShPrimaryButton type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
             {t("wishSubmit")}
           </ShPrimaryButton>
         </form>
