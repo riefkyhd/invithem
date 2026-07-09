@@ -74,7 +74,8 @@ export type TemplateId =
   | "romantic-heirloom"
   | "whimsical-pastel"
   | "monochrome-noir"
-  | "silent-heritage";
+  | "silent-heritage"
+  | "betawi-heritage";
 
 export interface AdminSettings {
   project_id: string;

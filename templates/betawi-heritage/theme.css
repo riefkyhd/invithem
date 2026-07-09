@@ -1,0 +1,33 @@
+[data-template="betawi-heritage"] {
+  --tmpl-bg: #faf5eb;
+  --tmpl-fg: #2c1810;
+  --tmpl-muted: #6b5348;
+  --tmpl-heading: #2c1810;
+  --tmpl-accent: #b83240;
+  --tmpl-accent-fg: #fffdf8;
+  --tmpl-accent-secondary: #c9a227;
+  --tmpl-card: #fffdf8;
+  --tmpl-card-border: rgba(184, 50, 64, 0.18);
+  --tmpl-surface: #f3ebe0;
+  --tmpl-inverse: #2c1810;
+  background-color: var(--tmpl-bg);
+  color: var(--tmpl-fg);
+}
+
+[data-template="betawi-heritage"] .tmpl-display {
+  font-family: var(--tmpl-display), serif;
+}
+
+[data-template="betawi-heritage"] .tmpl-body {
+  font-family: var(--tmpl-body), sans-serif;
+}
+
+[data-template="betawi-heritage"] .bw-card {
+  border: 1px solid var(--tmpl-card-border);
+  background-color: var(--tmpl-card);
+}
+
+[data-template="betawi-heritage"] .bw-event-card {
+  border: 1px solid var(--tmpl-card-border);
+  background-color: var(--tmpl-card);
+}

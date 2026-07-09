@@ -85,6 +85,9 @@ body {
 .tmpl-img-heritage {
   filter: sepia(0.12) contrast(1.02) brightness(1.03) saturate(0.92);
 }
+.tmpl-img-betawi {
+  filter: sepia(0.18) contrast(1.04) brightness(1.02) saturate(1.05);
+}
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;

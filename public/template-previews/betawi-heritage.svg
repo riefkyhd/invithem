@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="693" viewBox="0 0 390 693">
+  <rect width="390" height="693" fill="#faf5eb"/>
+  <rect x="0" y="0" width="390" height="300" fill="#2c1810"/>
+  <path fill="#faf5eb" d="M0 300 C48 248 120 220 195 220s147 28 195 80v-20H0z"/>
+  <text x="195" y="180" fill="#fffdf8" font-family="serif" font-size="28" font-weight="600" text-anchor="middle">Groom &amp; Bride</text>
+  <rect x="0" y="308" width="390" height="12" fill="#b83240" opacity="0.25"/>
+  <rect x="24" y="360" width="342" height="100" fill="#fffdf8" stroke="#b83240" stroke-opacity="0.3"/>
+  <text x="195" y="520" fill="#b83240" font-family="serif" font-size="26" font-weight="600" text-anchor="middle">Betawi</text>
+  <text x="195" y="650" fill="#6b5348" font-family="sans-serif" font-size="10" letter-spacing="0.25em" text-anchor="middle">L&apos;HÉRITAGE BETAWI</text>
+</svg>

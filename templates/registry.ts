@@ -12,6 +12,7 @@ export const TEMPLATE_IDS = [
   "whimsical-pastel",
   "monochrome-noir",
   "silent-heritage",
+  "betawi-heritage",
 ] as const satisfies readonly TemplateId[];
 
 const TEMPLATE_META: Record<TemplateId, Omit<TemplateMeta, "id">> = {
@@ -65,6 +66,11 @@ const TEMPLATE_META: Record<TemplateId, Omit<TemplateMeta, "id">> = {
     description: "French editorial heirloom — ivory grounds, gold filigree, sculptural curves, asymmetric gallery.",
     thumbnail: "/template-previews/silent-heritage.svg",
   },
+  "betawi-heritage": {
+    name: "L'Héritage Betawi",
+    description: "Jakarta cultural heritage — batik borders, archway cover, warm red and gold, Roti Buaya accents.",
+    thumbnail: "/template-previews/betawi-heritage.svg",
+  },
 };
 
 export function getAllTemplateMeta(): TemplateMeta[] {
@@ -105,6 +111,8 @@ export async function loadTemplate(id: TemplateId): Promise<TemplateModule> {
       return (await import("./monochrome-noir")).default;
     case "silent-heritage":
       return (await import("./silent-heritage")).default;
+    case "betawi-heritage":
+      return (await import("./betawi-heritage")).default;
     default:
       return (await import("./reference")).default;
   }

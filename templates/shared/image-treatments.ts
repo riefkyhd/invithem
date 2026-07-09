@@ -11,6 +11,7 @@ export const IMAGE_TREATMENTS: Record<TemplateId, string> = {
   "whimsical-pastel": "tmpl-img-whimsical",
   "monochrome-noir": "tmpl-img-noir",
   "silent-heritage": "tmpl-img-heritage",
+  "betawi-heritage": "tmpl-img-betawi",
 };
 
 export function getImageTreatmentClass(templateId: TemplateId): string {
